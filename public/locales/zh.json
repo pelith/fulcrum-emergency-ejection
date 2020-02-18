@@ -1,0 +1,23 @@
+{
+  "amount": "Amount",
+  "uuid": "Payment ID",
+  "tokenAddress": "Token Addr",
+  "tokenName": "Token Name",
+  "recvAddress": "Recv Addr",
+  "sagaPay": "FulcrumHuanChien",
+  "useCryptocurrencyPay": "Use Cryptocurrency Pay",
+  "useCreditCardPay": "Use Credit Card Pay",
+  "payNow": "Pay Now",
+  "connectWallet": "Connect your Wallet to Pay",
+  "prefixTerm": "By Paying, you agree to the ",
+  "term": "Terms and Conditions",
+  "billInfo": "BILLING INFORMATION",
+  "back": "Back",
+  "cryptoHeaderTitle": "Fast and simple way to pay with cryptocurrency",
+  "cryptoHeaderText": "Secured by the blockchain.",
+  "creditHeaderTitle": "Fast and simple way to pay with credit card",
+  "crediteaderText": "Secure payment via Stripe",
+  "currency": "Currency",
+  "stripeKey": "Sripe Key",
+  "useMobilePay": "Use Mobile Browser"
+}
