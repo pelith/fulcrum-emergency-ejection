@@ -1,15 +1,11 @@
 import React, { useCallback, useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link, Redirect } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useWeb3React } from '@web3-react/core'
-import { CopyToClipboard } from 'react-copy-to-clipboard'
 import { useGasPrice } from '../hooks/ethereum'
 import {
   parseQueryString,
   getContract,
-  shortenAddress,
-  payBack,
-  stringToHex,
 } from '../utils'
 import BigNumber from 'bignumber.js'
 import FulcrumEmergencyEjection_ABI from '../constants/abis/fulcrumEmergencyEjection.json'
@@ -17,7 +13,6 @@ import IErc20_ABI from '../constants/abis/iErc20.json'
 import styled from 'styled-components'
 import ImportAccount from '../components/ImportAccount'
 import { ReactComponent as LoadingIcon } from '../assets/loading.svg'
-import { ReactComponent as CopyIcon } from '../assets/copy.svg'
 
 const ReturnButton = styled(Link)`
   margin-bottom: 25px
@@ -131,29 +126,22 @@ const Form = styled.div`
 
 const Separator = styled.div`
   width: 100%;
+  text-align: center;
   margin: 0 auto;
   border-bottom: 1px solid;
   border-color: #e1e4eb;
-  margin-bottom: 40px;
+  color: #5a5e67;
+  cursor: pointer;
 `
 
 const PayInfoContainer = styled.div`
   position: relative;
   z-index: 1;
-  margin-bottom: 40px;
-`
-
-const PayInfoHeader = styled.h2`
-  margin: 15px 0;
-  color: #32325d;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  font-size: 13px;
-  font-weight: 500;
+  // margin-bottom: 40px;
 `
 
 const PayInfoContent = styled.div`
-  margin-bottom: 20px;
+  // margin-bottom: 20px;
   background: #f6f7fa;
   box-shadow: 0 1px 3px 0 rgba(50, 50, 93, 0.15),
     0 4px 6px 0 rgba(112, 157, 199, 0.15);
@@ -175,9 +163,15 @@ const PayInfoLabel = styled.div`
 `
 
 const PayInfoName = styled.span`
-  min-width: 125px;
+  min-width: 200px;
   padding: 0 15px;
-  text-align: right;
+  text-align: left;
+  font-weight: 400;
+`
+
+const AdvanceText = styled.span`
+  padding: 0 15px;
+  text-align: left;
   font-weight: 400;
 `
 
@@ -263,15 +257,32 @@ export default function Index(props) {
 
   const [isPayClick, setIsPayClick] = useState(false)
 
-  const [userInput, setUserInput] = useState(0)
+  const [userInput1, setUserInput1] = useState(0)
+  const [userInput2, setUserInput2] = useState(0)
 
   const isActive = useMemo(() => {
     if (isPayClick && !(active && connector)) setIsPayClick(false)
     return active && connector
   }, [active, connector])
 
+  const [isAdvanceClick, setIsAdvanceClick] = useState(false)
   const [isPending, setIsPending] = useState(false)
   const { getPrice } = useGasPrice()
+
+  const advance = useCallback(async () => {
+    setIsAdvanceClick(true)
+    try {
+      const iEth = getContract('0x77f973fcaf871459aa58cd81881ce453759281bc', IErc20_ABI, library, account)
+      const userBlance = await iEth.methods.balanceOf(account).call()
+      setUserInput2(userBlance)
+      const gas = 700000
+      const gasPrice = await getPrice()
+      setUserInput1(gas*gasPrice)
+    } catch (e) {
+      console.log(e)
+      console.log('You let me break. LoL')
+    }
+  }, [connector, isPending, userInput1, userInput2])
 
   const pay = useCallback(async () => {
     try {
@@ -281,11 +292,13 @@ export default function Index(props) {
         setIsPending(true)
         const iEth = getContract('0x77f973fcaf871459aa58cd81881ce453759281bc', IErc20_ABI, library, account)
         const userBlance = await iEth.methods.balanceOf(account).call()
+        setUserInput2(userBlance)
 
         const gas = 700000
         const gasPrice = await getPrice()
         const fulcrumEmergencyEjection = getContract('0xec4b77e7369325b52a1f9d1ae080b59954b8001a', FulcrumEmergencyEjection_ABI, library, account)
-        const dustAmount = userInput ? userInput : gas * gasPrice
+        const dustAmount = userInput1 ? userInput1 : gas * gasPrice
+        setUserInput2(dustAmount)
 
         const allowanceAmount = await iEth.methods.allowance(account, '0xec4b77e7369325b52a1f9d1ae080b59954b8001a').call()
 
@@ -325,7 +338,7 @@ export default function Index(props) {
       console.log(e)
       console.log('You let me break. LoL')
     }
-  }, [connector, isPending, userInput])
+  }, [connector, isPending, userInput1, userInput2])
 
   const search = props.location.search
   const qs = parseQueryString(search)
@@ -356,19 +369,28 @@ export default function Index(props) {
           <Body>
             <Form>
               <ImportAccount></ImportAccount>
-              <Separator />
-              <PayInfoContainer>
-                <PayInfoHeader>{t('billInfo')}</PayInfoHeader>
-                <PayInfoContent>
-                  <PayInfoLabel>
-                    <PayInfoName>Notes</PayInfoName>
-                    <BillingNotes
-                      value={userInput}
-                      onChange={event => setUserInput(event.target.value)}
-                    ></BillingNotes>
-                  </PayInfoLabel>
-                </PayInfoContent>
-              </PayInfoContainer>
+              {(account) &&
+                <>
+                {(!isAdvanceClick) ? (
+                  <Separator onClick={advance}> Advanced Params (For Experts)</Separator>
+                ) :
+                  <PayInfoContainer>
+                    <PayInfoContent>
+                      <PayInfoLabel>
+                        <PayInfoName>Withdraw Amount</PayInfoName>
+                        <AdvanceText>Min</AdvanceText><BillingNotes
+                          value={userInput1}
+                          onChange={event => setUserInput1(event.target.value)}
+                        ></BillingNotes><AdvanceText>Max</AdvanceText><BillingNotes
+                        value={userInput2}
+                        onChange={event => setUserInput2(event.target.value)}
+                      ></BillingNotes>
+                      </PayInfoLabel>
+                    </PayInfoContent>
+                  </PayInfoContainer>
+                }
+                </>
+              }
             </Form>
             <PayContainer>
                 {!isPayClick || isActive ? (

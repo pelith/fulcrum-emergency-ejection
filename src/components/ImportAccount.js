@@ -8,7 +8,7 @@ import {
 } from '../utils'
 
 import IErc20_ABI from '../constants/abis/iErc20.json'
-
+import Erc20_ABI from '../constants/abis/erc20.json'
 
 import {
   injected as injectedConnector,
@@ -182,6 +182,7 @@ export default function ImportAccount() {
   const isDetectedWeb3 = !!window.ethereum || !!window.web3
 
   const [balance, setbalance] = useState(0)
+  const [ibalance, setIBalance] = useState(0)
 
   const balanceTest = useMemo(
     () => {
@@ -194,12 +195,38 @@ export default function ImportAccount() {
             setbalance(test.div(1e18).toString())
           }
           else {
-            setbalance(1)
+            setbalance(0)
           }
           
         } catch (e) {
           console.log(e)
         }
+      })()
+    },
+    [active, connector],
+  )
+
+  const iBalanceTest = useMemo(
+    () => {
+      (async ()=> {
+        const a = async () => {try {
+            if (active && connector){
+              const wEth = getContract('0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', Erc20_ABI, library, account)
+              const test = new BigNumber(await wEth.methods.balanceOf('0x77f973fcaf871459aa58cd81881ce453759281bc').call())
+            
+              setIBalance(test.div(1e18).toString())
+            }
+            else {
+              setIBalance(0)
+            }
+          } catch (e) {
+            console.log(e)
+          }
+        }
+        await a()
+        setInterval( async () => {
+          await a()
+        }, 120000)
       })()
     },
     [active, connector],
@@ -287,7 +314,8 @@ export default function ImportAccount() {
         <>
           <ImportAccountTitle>{account}</ImportAccountTitle>
           <ImportAccountTitle>{balance}</ImportAccountTitle>
-          <iframe width="560" height="315" src="https://www.youtube.com/embed/Gc2u6AFImn8?autoplay=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          <ImportAccountTitle>{ibalance}</ImportAccountTitle>
+          {/* <iframe width="560" height="315" src="https://www.youtube.com/embed/Gc2u6AFImn8?autoplay=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> */}
           <UnconnectorButton onClick={unconnectWallet}>
             {t('logout')}
           </UnconnectorButton>
