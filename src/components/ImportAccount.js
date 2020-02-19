@@ -26,13 +26,23 @@ const ImportAccountContainer = styled.div`
 
 const ImportAccountBox = styled.div`
   display: flex;
-  justify-content: space-between;
-  flex-direction: row;
+  flex-direction: column;
+  align-items: center;
+
+  > * {
+    margin: 12px;
+  }
+
+  ${({ theme }) => theme.mediaQuery.md`
+    flex-direction: row;
+    justify-content: space-between;
+  `}
 `
 
 const ValueBox = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: center;
 `
 
 const ImportAccountTitle = styled.div`

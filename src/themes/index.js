@@ -8,8 +8,8 @@ export { GlobalStyle } from './GlobalStyle'
 
 const breakpoints = {
   sm: 425,
-  md: 868, // 768 + 100
-  lg: 1124, // 1024 + 100
+  md: 768,
+  lg: 1024,
   xl: 1440,
 }
 

@@ -68,18 +68,18 @@ const Container = styled.main`
 `
 
 const HeaderGif = styled.img`
-  flex: 1;
-  max-width: 201px;
+  width: 201px;
 `
 
 const HeaderContainer = styled.div`
   display: flex;
-  padding-top: 25px;
-  overflow: hidden;
-  max-height: 201px;
-  margin-bottom: 30px;
-  transition: 0.25s;
-  transition-timing-function: linear;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 0;
+
+  @media screen and (min-width: 600px) {
+    flex-direction: row;
+  }
 `
 
 const HeaderMiddle = styled.div`
@@ -93,13 +93,14 @@ const HeaderTitle = styled.h2`
   color: #006400;
 `
 
-const HeaderText = styled.a`
+const HeaderLink = styled.a`
+  margin: 16px auto;
   color: #5a5e67;
   font-size: 30px;
   text-align: center;
   color: #556b2f;
   display: block;
-  text-decoration: none;
+  text-decoration: underline;
 `
 
 const BodyContainer = styled.div`
@@ -114,7 +115,7 @@ const Body = styled.div`
   margin: 0 auto;
 `
 
-const Form = styled.div`
+const Box = styled.div`
   padding: 30px 45px 10px 45px;
   border-radius: 3px;
   box-shadow: 0 2px 29px -10px rgba(0, 0, 0, 0.49);
@@ -132,43 +133,46 @@ const Separator = styled.div`
 `
 
 const PayInfoContainer = styled.div`
-  position: relative;
-  z-index: 1;
-  // margin-bottom: 40px;
-`
-
-const PayInfoContent = styled.div`
-  // margin-bottom: 20px;
   background: #f6f7fa;
   box-shadow: 0 1px 3px 0 rgba(50, 50, 93, 0.15),
     0 4px 6px 0 rgba(112, 157, 199, 0.15);
   border-radius: 4px;
   border: none;
-`
-
-const PayInfoLabel = styled.div`
-  position: relative;
-  display: flex;
-  flex-direction: row;
-  height: 42px;
-  padding: 10px 0;
-  align-items: center;
-  justify-content: center;
+  z-index: 1;
   color: #32325d;
-  font-weight: 400;
-  border-bottom: 1px solid #e1e4eb;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
 `
 
-const PayInfoName = styled.span`
-  min-width: 200px;
-  padding: 0 15px;
-  text-align: left;
+const InputFieldGroup = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+  > * {
+    margin: 12px;
+  }
+`
+
+const InputField = styled.div`
+  display: flex;
+
+  > *:not(:first-child) {
+    margin-left: 12px;
+  }
+`
+
+const FormTitle = styled.span`
+  margin: 12px;
   font-weight: 400;
 `
 
-const AdvanceText = styled.span`
-  padding: 0 15px;
-  text-align: left;
+const InpetLabel = styled.span`
   font-weight: 400;
 `
 
@@ -230,7 +234,8 @@ const StyledLoadingIcon = styled(LoadingIcon)`
   height: 30px;
 `
 
-const BillingNotes = styled.input`
+const NumberInput = styled.input.attrs(() => ({ type: 'number' }))`
+  width: 100%;
   font-size: 18px;
   font-weight: 500;
   font-style: normal;
@@ -238,10 +243,26 @@ const BillingNotes = styled.input`
   line-height: normal;
   letter-spacing: normal;
   text-align: left;
-  margin: 30px 0 20px;
-  width: 100%;
-
   background-color: #fff;
+`
+
+const Divider = styled.hr`
+  width: 100%;
+  height: 2px;
+  background-color: #006400;
+`
+
+const Article = styled.article`
+  width: 100%;
+`
+
+const Title = styled.h2`
+  font-size: 28px;
+  text-align: center;
+`
+
+const Paragraph = styled.p`
+  font-size: 14px;
 `
 
 export default function Index(props) {
@@ -365,83 +386,65 @@ export default function Index(props) {
     }
   }, [connector, isPending, userInput1, userInput2])
 
-  const search = props.location.search
-  const qs = parseQueryString(search)
-
-  var data = {}
-
-  try {
-    if (qs.data) {
-      data = JSON.parse(atob(qs.data))
-    }
-  } catch (e) {
-    console.log(e)
-    console.log('Somethin Wrong')
-  }
-
   return (
-    <>
-      <Container>
-        <HeaderContainer>
-          <HeaderGif src='https://i.imgur.com/0BpqqmW.gif'></HeaderGif>
-          <HeaderMiddle>
-            <HeaderTitle>{t('cryptoHeaderTitle')}</HeaderTitle>
-            <HeaderText href='https://etherscan.io/address/0x77f973fcaf871459aa58cd81881ce453759281bc'>
-              {t('cryptoHeaderText')}
-            </HeaderText>
-          </HeaderMiddle>
-          <HeaderGif src='https://i.imgur.com/0BpqqmW.gif'></HeaderGif>
-        </HeaderContainer>
-        <BodyContainer>
-          <Body>
-            <PayContainer>
-              {!isPayClick || isActive ? (
-                <PayButton onClick={pay} disabled={isPending}>
-                  {'Run!'}
-                </PayButton>
-              ) : (
-                <ImportAccountTitle>{t('connectWallet')}</ImportAccountTitle>
-              )}
-            </PayContainer>
-            <Form>
-              <ImportAccount></ImportAccount>
-              {account && (
-                <>
-                  {!isAdvanceClick ? (
-                    <Separator onClick={advance}>
-                      {' '}
-                      Advanced Params (For Experts)
-                    </Separator>
-                  ) : (
-                    <PayInfoContainer>
-                      <PayInfoContent>
-                        <PayInfoLabel>
-                          <PayInfoName>Withdraw Amount</PayInfoName>
-                          <AdvanceText>Min</AdvanceText>
-                          <BillingNotes
-                            value={userInput1}
-                            onChange={event =>
-                              setUserInput1(event.target.value)
-                            }
-                          ></BillingNotes>
-                          <AdvanceText>Max</AdvanceText>
-                          <BillingNotes
-                            value={userInput2}
-                            onChange={event =>
-                              setUserInput2(event.target.value)
-                            }
-                          ></BillingNotes>
-                        </PayInfoLabel>
-                      </PayInfoContent>
-                    </PayInfoContainer>
-                  )}
-                </>
-              )}
-            </Form>
-          </Body>
+    <Container>
+      <HeaderContainer>
+        <HeaderGif src='https://i.imgur.com/0BpqqmW.gif'></HeaderGif>
+        <HeaderMiddle>
+          <HeaderTitle>{t('cryptoHeaderTitle')}</HeaderTitle>
+          <HeaderLink href='https://etherscan.io/address/0x77f973fcaf871459aa58cd81881ce453759281bc'>
+            {t('cryptoHeaderText')}
+          </HeaderLink>
+        </HeaderMiddle>
+        <HeaderGif src='https://i.imgur.com/0BpqqmW.gif'></HeaderGif>
+      </HeaderContainer>
+      <BodyContainer>
+        <Body>
+          <PayContainer>
+            {!isPayClick || isActive ? (
+              <PayButton onClick={pay} disabled={isPending}>
+                {'Run!'}
+              </PayButton>
+            ) : (
+              <ImportAccountTitle>{t('connectWallet')}</ImportAccountTitle>
+            )}
+          </PayContainer>
+          <Box>
+            <ImportAccount></ImportAccount>
+            {account && (
+              <>
+                {!isAdvanceClick ? (
+                  <Separator onClick={advance}>
+                    {' '}
+                    Advanced Params (For Experts)
+                  </Separator>
+                ) : (
+                  <PayInfoContainer>
+                    <FormTitle>Withdraw Amount</FormTitle>
+                    <InputFieldGroup>
+                      <InputField>
+                        <InpetLabel>Min</InpetLabel>
+                        <NumberInput
+                          value={userInput1}
+                          onChange={event => setUserInput1(event.target.value)}
+                        />
+                      </InputField>
+                      <InputField>
+                        <InpetLabel>Max</InpetLabel>
+                        <NumberInput
+                          value={userInput2}
+                          onChange={event => setUserInput2(event.target.value)}
+                        />
+                      </InputField>
+                    </InputFieldGroup>
+                  </PayInfoContainer>
+                )}
+              </>
+            )}
+          </Box>
           <div id='mc_embed_signup'>
             <form
-              action='https://pelith.us4.list-manage.com/subscribe/post?u=60cf2da2a9c95713630d04bf4&id=d9f24cce24'
+              action='https://pelith.us4.list-manage.com/subscribe/post?u=60cf2da2a9c95713630d04bf4&amp;id=d9f24cce24'
               method='post'
               id='mc-embedded-subscribe-form'
               name='mc-embedded-subscribe-form'
@@ -469,11 +472,35 @@ export default function Index(props) {
                     class='button'
                   />
                 </div>
-              </div>
+              </div>  
             </form>
           </div>
-        </BodyContainer>
-      </Container>
-    </>
+          <Divider />
+          <Article>
+            <Title>How does it work?</Title>
+            <Paragraph>
+              Fulcrum Emergency Ejection is a smart contract that automatically
+              calculates the maximal claimable amount in Fulcorm iETH pool. It
+              helps you to withdraw stucked fund as much as possible.
+            </Paragraph>
+            <Paragraph>
+              While withdrawing from Fulcrum, two requirements must be
+              fulfilled: you have that much deposit and there's enough liquidity
+              in iToken's contract. Since many people are trying to extract ETH,
+              even it seems to be possible for you to withdraw, someone may
+              always run before your transaction and lead to yours fail.
+            </Paragraph>
+            <Paragraph>
+              Fulcrum Emergency Ejection contract first checks how much ETH are
+              there in the pool, if none, quit, if some, withdraw the exact
+              number then. More gas efficient. Txs are not likely to revert. No
+              more suffer from gas estimation and competition.
+            </Paragraph>
+            <Paragraph>~35,000 gas for a tx not extracting any ETH</Paragraph>
+            <Paragraph>~500,000 gas for successful withdrawals</Paragraph>
+          </Article>
+        </Body>
+      </BodyContainer>
+    </Container>
   )
 }
