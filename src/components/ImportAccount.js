@@ -382,9 +382,7 @@ export default function ImportAccount() {
               <ImportAccountTitle>
                 Account:&nbsp;{particialAddress(account)}
               </ImportAccountTitle>
-              <ImportAccountValue>
-                Your ETH:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{balance}
-              </ImportAccountValue>
+              <ImportAccountValue>Your ETH:{balance}</ImportAccountValue>
               <ImportAccountValue>
                 iETH:&nbsp;&nbsp;&nbsp;&nbsp;{ibalance}
               </ImportAccountValue>
