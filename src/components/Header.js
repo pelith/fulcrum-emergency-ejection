@@ -59,12 +59,16 @@ export default function Header() {
 
   return (
     <HeaderContainer>
-      <RocketText role='img' aria-label='rocket' style={{ textAlign: 'right' }}>
-        🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀
+      <RocketText style={{ textAlign: 'right' }}>
+        <span role='img' aria-label='rocket'>
+          🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀
+        </span>
       </RocketText>
       <LogoText>{t('title')}</LogoText>
-      <RocketText role='img' aria-label='rocket'>
-        🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀
+      <RocketText>
+        <span role='img' aria-label='rocket'>
+          🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀
+        </span>
       </RocketText>
     </HeaderContainer>
   )

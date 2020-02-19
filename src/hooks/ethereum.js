@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { useWeb3React } from '@web3-react/core'
 
 import { getContract, getGasPrice } from '../utils'

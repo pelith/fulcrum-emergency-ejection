@@ -61,17 +61,6 @@ const ImportAccountValue = styled.div`
   font-stretch: normal;
 `
 
-const Text = styled.div`
-  font-size: 18px;
-  font-weight: 500;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  text-align: center;
-  margin: 30px 0 20px;
-`
-
 const ImportAccountContent = styled.div`
   font-family: Hack, monospace;
   display: flex;
@@ -235,7 +224,8 @@ export default function ImportAccount() {
   const [balance, setbalance] = useState(0)
   const [ibalance, setIBalance] = useState(0)
 
-  const balanceTest = useMemo(() => {
+  // get user iETH balance
+  useMemo(() => {
     ;(async () => {
       try {
         if (active && connector) {
@@ -257,9 +247,10 @@ export default function ImportAccount() {
         console.log(e)
       }
     })()
-  }, [active, connector])
+  }, [account, active, connector, library])
 
-  const iBalanceTest = useMemo(() => {
+  // get eth amount in fulcrum pool
+  useMemo(() => {
     ;(async () => {
       const a = async () => {
         try {
@@ -289,7 +280,7 @@ export default function ImportAccount() {
         await a()
       }, 120000)
     })()
-  }, [active, connector])
+  }, [account, active, connector, library])
 
   const isInjected = useMemo(() => active && connector === injectedConnector, [
     active,
@@ -320,22 +311,23 @@ export default function ImportAccount() {
     try {
       await activate(injectedConnector, undefined, true)
     } catch (e) {
-      console.log('You let me break. LoL')
+      console.log(e)
     }
   }, [activate])
 
   const connectFortmatic = useCallback(async () => {
     try {
       await activate(fortmaticConnector, undefined, true)
-    } catch {
-      console.log('You let me break. LoL')
+    } catch (e) {
+      console.log(e)
     }
   }, [activate])
 
   const connectTorus = useCallback(async () => {
     try {
       await activate(torusConnector, undefined, true)
-    } catch {
+    } catch (e) {
+      console.log(e)
       await torusConnector.deactivate()
     }
   }, [activate])
@@ -343,16 +335,16 @@ export default function ImportAccount() {
   const connectPortis = useCallback(async () => {
     try {
       await activate(portisConnector, undefined, true)
-    } catch {
-      console.log('You let me break. LoL')
+    } catch (e) {
+      console.log(e)
     }
   }, [activate])
 
   const connectWalletconnect = useCallback(async () => {
     try {
       await activate(walletconnectConnector, undefined, true)
-    } catch {
-      console.log('You let me break. LoL')
+    } catch (e) {
+      console.log(e)
     }
   }, [activate])
 

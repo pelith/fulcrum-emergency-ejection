@@ -1,62 +1,12 @@
-import React, { useCallback, useState, useMemo } from 'react'
+import React, { useCallback, useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
 import { useWeb3React } from '@web3-react/core'
 import { useGasPrice } from '../hooks/ethereum'
-import { parseQueryString, getContract } from '../utils'
-import BigNumber from 'bignumber.js'
+import { getContract } from '../utils'
 import FulcrumEmergencyEjection_ABI from '../constants/abis/fulcrumEmergencyEjection.json'
 import IErc20_ABI from '../constants/abis/iErc20.json'
 import styled from 'styled-components'
 import ImportAccount from '../components/ImportAccount'
-import { ReactComponent as LoadingIcon } from '../assets/loading.svg'
-
-const ReturnButton = styled(Link)`
-  margin-bottom: 25px
-  position: fixed;
-  left: 0;
-  top: 100px;
-  z-index: 99;
-  border-radius: 3px 0 0 3px;
-  font-size: 13px;
-  padding: 10px 18px;
-  cursor: pointer;
-  box-shadow: 0 2px 15px -6px #000;
-  display: block;
-
-	background-color: #f6f7fa;
-  color: #5a5e67;
-
-  text-decoration: none;
-  
-  &:before {
-    content: "\\2190";
-    font-size: 15px;
-    margin-right: 5px;
-    position: relative;
-    top: 1px;
-  }
-`
-
-const CopyButton = styled.button`
-  width: 32px;
-  height: 32px;
-  border: none;
-  border-radius: 16px;
-  padding: 0;
-  background-color: transparent;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  &:focus {
-    outline: none;
-  }
-
-  &:active {
-    background-color: ${({ theme }) => theme.colors.blueGray100};
-  }
-`
 
 const Container = styled.main`
   flex: 1 0 auto;
@@ -84,6 +34,9 @@ const HeaderContainer = styled.div`
 
 const HeaderMiddle = styled.div`
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `
 
 const HeaderTitle = styled.h2`
@@ -99,7 +52,7 @@ const HeaderLink = styled.a`
   font-size: 30px;
   text-align: center;
   color: #556b2f;
-  display: block;
+  display: inline-block;
   text-decoration: underline;
 `
 
@@ -176,7 +129,7 @@ const InpetLabel = styled.span`
   font-weight: 400;
 `
 
-const PayContainer = styled.div`
+const RunButtonWrapper = styled.div`
   padding-top: 45px;
   text-align: center;
   padding-bottom: 45px;
@@ -214,11 +167,11 @@ const Button = styled.button.attrs(() => ({ type: 'button' }))`
   }
 `
 
-const PayButton = styled(Button).attrs(() => ({
+const RunButton = styled(Button).attrs(() => ({
   type: 'button',
 }))``
 
-const ImportAccountTitle = styled.div`
+const ConnectWalletMessage = styled.div`
   font-size: 18px;
   font-weight: 500;
   font-style: normal;
@@ -227,11 +180,6 @@ const ImportAccountTitle = styled.div`
   letter-spacing: normal;
   text-align: center;
   margin: 30px 0 20px;
-`
-
-const StyledLoadingIcon = styled(LoadingIcon)`
-  width: 30px;
-  height: 30px;
 `
 
 const NumberInput = styled.input.attrs(() => ({ type: 'number' }))`
@@ -249,7 +197,40 @@ const NumberInput = styled.input.attrs(() => ({ type: 'number' }))`
 const Divider = styled.hr`
   width: 100%;
   height: 2px;
+  margin: 24px 0;
   background-color: #006400;
+`
+
+const SubscribeForm = styled.form`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`
+
+const TextInput = styled.input``
+
+const SubscribeButton = styled.button`
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  letter-spacing: 0.03em;
+  color: #fff;
+  background-color: #450000;
+  box-sizing: border-box;
+  height: 32px;
+  line-height: 32px;
+  padding: 0 18px;
+  display: inline-block;
+  margin: 0;
+  transition: all 0.23s;
+
+  &:hover {
+    background-color: #aa0000;
+    cursor: pointer;
+  }
 `
 
 const Article = styled.article`
@@ -266,20 +247,20 @@ const Paragraph = styled.p`
 `
 
 export default function Index(props) {
-  const { account, connector, active, library } = useWeb3React()
+  const { account, active, library } = useWeb3React()
 
   const { t } = useTranslation()
 
-  const [isPayClick, setIsPayClick] = useState(false)
+  const [amountMin, setAmountMin] = useState(0)
+  const [amountMax, setAmountMax] = useState(0)
+  const [email, setEmail] = useState('')
 
-  const [userInput1, setUserInput1] = useState(0)
-  const [userInput2, setUserInput2] = useState(0)
-  const [userInput3, setUserInput3] = useState('')
-
-  const isActive = useMemo(() => {
-    if (isPayClick && !(active && connector)) setIsPayClick(false)
-    return active && connector
-  }, [active, connector])
+  const [isShowConnectMessage, setIsShowConnectMessage] = useState(false)
+  useEffect(() => {
+    if (active) {
+      setIsShowConnectMessage(false)
+    }
+  }, [active])
 
   const [isAdvanceClick, setIsAdvanceClick] = useState(false)
   const [isPending, setIsPending] = useState(false)
@@ -295,127 +276,130 @@ export default function Index(props) {
         account,
       )
       const userBlance = await iEth.methods.balanceOf(account).call()
-      setUserInput2(userBlance)
+      setAmountMax(userBlance)
+
       const gas = 700000
       const gasPrice = await getPrice()
-      setUserInput1(gas * gasPrice)
+      setAmountMin(gas * gasPrice)
     } catch (e) {
       console.log(e)
-      console.log('You let me break. LoL')
     }
-  }, [connector, isPending, userInput1, userInput2])
+  }, [library, account, getPrice])
 
-  const pay = useCallback(async () => {
+  const run = useCallback(async () => {
+    if (!active) {
+      setIsShowConnectMessage(true)
+      return
+    }
+    if (isPending) {
+      return
+    }
+
+    // play happy youtube video
+    const iframeBox = document.getElementById('iframeBox')
+    iframeBox.insertAdjacentHTML(
+      'afterend',
+      '<iframe width="280" height="125" src="https://www.youtube.com/embed/Gc2u6AFImn8?autoplay=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
+    )
+    iframeBox.remove()
+
     try {
-      if (!connector) {
-        setIsPayClick(true)
-      } else if (isActive && !isPending) {
-        const iframeBox = document.getElementById('iframeBox')
-        iframeBox.insertAdjacentHTML(
-          'afterend',
-          '<iframe width="280" height="125" src="https://www.youtube.com/embed/Gc2u6AFImn8?autoplay=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
-        )
-        iframeBox.remove()
+      setIsPending(true)
+      const iEth = getContract(
+        '0x77f973fcaf871459aa58cd81881ce453759281bc',
+        IErc20_ABI,
+        library,
+        account,
+      )
+      const userBlance = await iEth.methods.balanceOf(account).call()
+      setAmountMax(userBlance)
 
-        setIsPending(true)
-        const iEth = getContract(
-          '0x77f973fcaf871459aa58cd81881ce453759281bc',
-          IErc20_ABI,
-          library,
-          account,
-        )
-        const userBlance = await iEth.methods.balanceOf(account).call()
-        setUserInput2(userBlance)
+      const gas = 700000
+      const gasPrice = await getPrice()
+      const fulcrumEmergencyEjection = getContract(
+        '0xec4b77e7369325b52a1f9d1ae080b59954b8001a',
+        FulcrumEmergencyEjection_ABI,
+        library,
+        account,
+      )
+      const dustAmount = amountMin ? amountMin : gas * gasPrice
+      setAmountMax(dustAmount)
 
-        const gas = 700000
-        const gasPrice = await getPrice()
-        const fulcrumEmergencyEjection = getContract(
-          '0xec4b77e7369325b52a1f9d1ae080b59954b8001a',
-          FulcrumEmergencyEjection_ABI,
-          library,
-          account,
-        )
-        const dustAmount = userInput1 ? userInput1 : gas * gasPrice
-        setUserInput2(dustAmount)
+      const allowanceAmount = await iEth.methods
+        .allowance(account, '0xec4b77e7369325b52a1f9d1ae080b59954b8001a')
+        .call()
 
-        const allowanceAmount = await iEth.methods
-          .allowance(account, '0xec4b77e7369325b52a1f9d1ae080b59954b8001a')
-          .call()
-
-        if (userBlance.gt(allowanceAmount)) {
-          await iEth.methods
-            .approve(
-              '0xec4b77e7369325b52a1f9d1ae080b59954b8001a',
-              '115792089237316195423570985008687907853269984665640564039457584007913129639935',
-            )
-            .send({
-              gas,
-              gasPrice,
-            })
-        }
-
-        const corona = fulcrumEmergencyEjection.methods.corona(
-          dustAmount,
-          userBlance,
-        )
-
-        await corona
+      if (userBlance.gt(allowanceAmount)) {
+        await iEth.methods
+          .approve(
+            '0xec4b77e7369325b52a1f9d1ae080b59954b8001a',
+            '115792089237316195423570985008687907853269984665640564039457584007913129639935',
+          )
           .send({
             gas,
             gasPrice,
           })
-          .on('transactionHash', () => {
-            setIsPending(true)
-          })
-          .on('confirmation', async (confirmationNumber, receipt) => {
-            console.log(receipt)
-            // call back to api servedr
-            if (confirmationNumber === 1) {
-              setIsPending(false)
-              window.close()
-            }
-          })
-          .on('error', () => {
-            setIsPending(false)
-          })
       }
+
+      const corona = fulcrumEmergencyEjection.methods.corona(
+        dustAmount,
+        userBlance,
+      )
+
+      await corona
+        .send({
+          gas,
+          gasPrice,
+        })
+        .on('transactionHash', () => {
+          setIsPending(true)
+        })
+        .on('confirmation', async (confirmationNumber, receipt) => {
+          console.log(receipt)
+          // call back to api servedr
+          if (confirmationNumber === 1) {
+            setIsPending(false)
+            window.close()
+          }
+        })
+        .on('error', () => {
+          setIsPending(false)
+        })
     } catch (e) {
-      setIsPending(false)
       console.log(e)
-      console.log('You let me break. LoL')
+      setIsPending(false)
     }
-  }, [connector, isPending, userInput1, userInput2])
+  }, [active, isPending, library, account, getPrice, amountMin])
 
   return (
     <Container>
       <HeaderContainer>
-        <HeaderGif src='https://i.imgur.com/0BpqqmW.gif'></HeaderGif>
+        <HeaderGif src='https://i.imgur.com/0BpqqmW.gif' />
         <HeaderMiddle>
           <HeaderTitle>{t('cryptoHeaderTitle')}</HeaderTitle>
           <HeaderLink href='https://etherscan.io/address/0x77f973fcaf871459aa58cd81881ce453759281bc'>
             {t('cryptoHeaderText')}
           </HeaderLink>
         </HeaderMiddle>
-        <HeaderGif src='https://i.imgur.com/0BpqqmW.gif'></HeaderGif>
+        <HeaderGif src='https://i.imgur.com/0BpqqmW.gif' />
       </HeaderContainer>
       <BodyContainer>
         <Body>
-          <PayContainer>
-            {!isPayClick || isActive ? (
-              <PayButton onClick={pay} disabled={isPending}>
-                {'Run!'}
-              </PayButton>
+          <RunButtonWrapper>
+            {isShowConnectMessage ? (
+              <ConnectWalletMessage>{t('connectWallet')}</ConnectWalletMessage>
             ) : (
-              <ImportAccountTitle>{t('connectWallet')}</ImportAccountTitle>
+              <RunButton onClick={run} disabled={isPending}>
+                Run!
+              </RunButton>
             )}
-          </PayContainer>
+          </RunButtonWrapper>
           <Box>
             <ImportAccount></ImportAccount>
             {account && (
               <>
                 {!isAdvanceClick ? (
                   <Separator onClick={advance}>
-                    {' '}
                     Advanced Params (For Experts)
                   </Separator>
                 ) : (
@@ -425,15 +409,15 @@ export default function Index(props) {
                       <InputField>
                         <InpetLabel>Min</InpetLabel>
                         <NumberInput
-                          value={userInput1}
-                          onChange={event => setUserInput1(event.target.value)}
+                          value={amountMin}
+                          onChange={event => setAmountMin(event.target.value)}
                         />
                       </InputField>
                       <InputField>
                         <InpetLabel>Max</InpetLabel>
                         <NumberInput
-                          value={userInput2}
-                          onChange={event => setUserInput2(event.target.value)}
+                          value={amountMax}
+                          onChange={event => setAmountMax(event.target.value)}
                         />
                       </InputField>
                     </InputFieldGroup>
@@ -442,8 +426,10 @@ export default function Index(props) {
               </>
             )}
           </Box>
+          <Divider />
+          <Title>Subscribe Now for more DeFi products and tools</Title>
           <div id='mc_embed_signup'>
-            <form
+            <SubscribeForm
               action='https://pelith.us4.list-manage.com/subscribe/post?u=60cf2da2a9c95713630d04bf4&amp;id=d9f24cce24'
               method='post'
               id='mc-embedded-subscribe-form'
@@ -451,32 +437,20 @@ export default function Index(props) {
               className='validate'
               target='_blank'
             >
-              <div
-                id='mc_embed_signup_scroll'
-                style={{ display: 'flex', justifyContent: 'center' }}
-              >
-                <input
-                  type='email'
-                  value={userInput3}
-                  onChange={event => setUserInput3(event.target.value)}
-                  name='EMAIL'
-                  className='email'
-                  id='mce-EMAIL'
-                  placeholder='email address'
-                  required
-                />
-                <input
-                  type='submit'
-                  value='Subscribe'
-                  name='subscribe'
-                  id='mc-embedded-subscribe'
-                  className='button'
-                />
-              </div>
-            </form>
-            <Paragraph style={{ textAlign: 'center' }}>
-              Subscribe Now for more DeFi products and tools
-            </Paragraph>
+              <TextInput
+                type='email'
+                value={email}
+                onChange={event => setEmail(event.target.value)}
+                name='EMAIL'
+                className='email'
+                id='mce-EMAIL'
+                placeholder='email address'
+                required
+              />
+              <SubscribeButton name='subscribe' id='mc-embedded-subscribe'>
+                Subscribe
+              </SubscribeButton>
+            </SubscribeForm>
           </div>
           <Divider />
           <Article>

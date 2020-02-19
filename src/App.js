@@ -8,7 +8,7 @@ import styled from 'styled-components'
 import AppLoader from './components/AppLoader'
 import Header from './components/Header'
 import Footer from './components/Footer'
-import Index from './pages/Index'
+import Home from './pages/Home'
 import ThemeProvider, { GlobalStyle } from './themes'
 
 function getLibrary(provider) {
@@ -37,7 +37,7 @@ function Router() {
             <Header />
             <Body>
               <Switch>
-                <Route exact path='/' component={Index} />
+                <Route exact path='/' component={Home} />
               </Switch>
             </Body>
             <Footer />
