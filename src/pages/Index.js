@@ -253,6 +253,7 @@ export default function Index(props) {
 
   const [userInput1, setUserInput1] = useState(0)
   const [userInput2, setUserInput2] = useState(0)
+  const [userInput3, setUserInput3] = useState('')
 
   const isActive = useMemo(() => {
     if (isPayClick && !(active && connector)) setIsPayClick(false)
@@ -438,18 +439,27 @@ export default function Index(props) {
               )}
             </Form>
           </Body>
-
-          <>
-            <div id='mc_embed_signup'>
-              <form
-                action='https://pelith.us4.list-manage.com/subscribe/post?u=60cf2da2a9c95713630d04bf4&amp;id=d9f24cce24'
-                method='post'
-                id='mc-embedded-subscribe-form'
-                name='mc-embedded-subscribe-form'
-                class='validate'
-                target='_blank'
-                novalidate
-              >
+          <div id='mc_embed_signup'>
+            <form
+              action='https://pelith.us4.list-manage.com/subscribe/post?u=60cf2da2a9c95713630d04bf4&id=d9f24cce24'
+              method='post'
+              id='mc-embedded-subscribe-form'
+              name='mc-embedded-subscribe-form'
+              class='validate'
+              target='_blank'
+            >
+              <div id='mc_embed_signup_scroll'>
+                <input
+                  type='email'
+                  value={userInput3}
+                  onChange={event => setUserInput3(event.target.value)}
+                  name='EMAIL'
+                  class='email'
+                  id='mce-EMAIL'
+                  placeholder='email address'
+                  required
+                />
+                <div id='email_subscribe' aria-hidden='true'></div>
                 <div class='clear'>
                   <input
                     type='submit'
@@ -459,9 +469,9 @@ export default function Index(props) {
                     class='button'
                   />
                 </div>
-              </form>
-            </div>
-          </>
+              </div>
+            </form>
+          </div>
         </BodyContainer>
       </Container>
     </>
