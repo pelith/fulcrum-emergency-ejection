@@ -451,29 +451,32 @@ export default function Index(props) {
               className='validate'
               target='_blank'
             >
-              <div id='mc_embed_signup_scroll'>
+              <div
+                id='mc_embed_signup_scroll'
+                style={{ display: 'flex', justifyContent: 'center' }}
+              >
                 <input
                   type='email'
                   value={userInput3}
                   onChange={event => setUserInput3(event.target.value)}
                   name='EMAIL'
-                  class='email'
+                  className='email'
                   id='mce-EMAIL'
                   placeholder='email address'
                   required
                 />
-                <div id='email_subscribe' aria-hidden='true'></div>
-                <div class='clear'>
-                  <input
-                    type='submit'
-                    value='Subscribe'
-                    name='subscribe'
-                    id='mc-embedded-subscribe'
-                    class='button'
-                  />
-                </div>
-              </div>  
+                <input
+                  type='submit'
+                  value='Subscribe'
+                  name='subscribe'
+                  id='mc-embedded-subscribe'
+                  className='button'
+                />
+              </div>
             </form>
+            <Paragraph style={{ textAlign: 'center' }}>
+              Subscribe Now for more DeFi products and tools
+            </Paragraph>
           </div>
           <Divider />
           <Article>
