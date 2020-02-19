@@ -438,6 +438,30 @@ export default function Index(props) {
               )}
             </Form>
           </Body>
+
+          <>
+            <div id='mc_embed_signup'>
+              <form
+                action='https://pelith.us4.list-manage.com/subscribe/post?u=60cf2da2a9c95713630d04bf4&amp;id=d9f24cce24'
+                method='post'
+                id='mc-embedded-subscribe-form'
+                name='mc-embedded-subscribe-form'
+                class='validate'
+                target='_blank'
+                novalidate
+              >
+                <div class='clear'>
+                  <input
+                    type='submit'
+                    value='Subscribe'
+                    name='subscribe'
+                    id='mc-embedded-subscribe'
+                    class='button'
+                  />
+                </div>
+              </form>
+            </div>
+          </>
         </BodyContainer>
       </Container>
     </>

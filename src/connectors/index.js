@@ -22,7 +22,7 @@ export const walletconnect = new WalletConnectConnector({
 })
 
 export const fortmatic = new FortmaticConnector({
-  apiKey: 'pk_live_CC75CEEE7D7E8630',
+  apiKey: 'pk_live_6BAFDA50B28520A4',
   chainId: 1,
 })
 
