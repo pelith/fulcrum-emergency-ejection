@@ -448,7 +448,7 @@ export default function Index(props) {
               method='post'
               id='mc-embedded-subscribe-form'
               name='mc-embedded-subscribe-form'
-              class='validate'
+              className='validate'
               target='_blank'
             >
               <div id='mc_embed_signup_scroll'>
