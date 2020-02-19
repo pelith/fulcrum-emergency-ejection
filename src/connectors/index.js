@@ -31,6 +31,6 @@ export const torus = new TorusConnector({
 })
 
 export const portis = new PortisConnector({
-  dAppId: '409867db-d228-4327-abfc-ccd2e97f10a0',
+  dAppId: '2a45d6e4-6dfd-45bc-99d1-363bc8df1020',
   networks: [1],
 })
