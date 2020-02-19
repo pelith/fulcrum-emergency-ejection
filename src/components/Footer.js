@@ -74,7 +74,10 @@ export default function Footer() {
           Crypto Structured Fund
         </ExternalLink>
         <FooterText>Fulcrum Emergency Ejection</FooterText>
-        <ExternalLink href='https://github.com/pelith' target='_blank'>
+        <ExternalLink
+          href='https://github.com/pelith/fulcrum-emergency-ejection'
+          target='_blank'
+        >
           Github
         </ExternalLink>
         <ExternalLink
