@@ -29,17 +29,36 @@ const HeaderLogo = styled.a`
 `
 
 const RocketText = styled.p`
-text-align:right;
+  text-align: right;
 `
 
 const LogoText = styled.h1`
+  font-size: 3em;
   letter-spacing: 2px;
-  background-image: linear-gradient(to left, violet, indigo, blue, green, yellow, orange, red);
+  background-image: linear-gradient(
+    to left,
+    violet,
+    indigo,
+    blue,
+    green,
+    yellow,
+    orange,
+    red
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   border-bottom: 3px solid transparent;
-  border-image: linear-gradient(to left, violet, indigo, blue, green, yellow, orange, red);
-   border-image-slice: 1;
+  border-image: linear-gradient(
+    to left,
+    violet,
+    indigo,
+    blue,
+    green,
+    yellow,
+    orange,
+    red
+  );
+  border-image-slice: 1;
 `
 
 const LogoSubTitle = styled.div`
@@ -54,7 +73,9 @@ export default function Header() {
 
   return (
     <HeaderContainer>
-      <p>🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀</p><LogoText>{t('sagaPay')}</LogoText><p>🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀</p>
+      <p>🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀</p>
+      <LogoText>{t('title')}</LogoText>
+      <p>🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀</p>
     </HeaderContainer>
   )
 }

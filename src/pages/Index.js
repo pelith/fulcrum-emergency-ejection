@@ -3,10 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { useWeb3React } from '@web3-react/core'
 import { useGasPrice } from '../hooks/ethereum'
-import {
-  parseQueryString,
-  getContract,
-} from '../utils'
+import { parseQueryString, getContract } from '../utils'
 import BigNumber from 'bignumber.js'
 import FulcrumEmergencyEjection_ABI from '../constants/abis/fulcrumEmergencyEjection.json'
 import IErc20_ABI from '../constants/abis/iErc20.json'
@@ -71,13 +68,13 @@ const Container = styled.main`
 `
 
 const HeaderGif = styled.img`
-flex: 1;
-max-width: 201px;
+  flex: 1;
+  max-width: 201px;
 `
 
 const HeaderContainer = styled.div`
   display: flex;
-  padding-top: 45px;
+  padding-top: 25px;
   overflow: hidden;
   max-height: 201px;
   margin-bottom: 30px;
@@ -86,7 +83,7 @@ const HeaderContainer = styled.div`
 `
 
 const HeaderMiddle = styled.div`
-flex: 1;
+  flex: 1;
 `
 
 const HeaderTitle = styled.h2`
@@ -100,9 +97,9 @@ const HeaderText = styled.a`
   color: #5a5e67;
   font-size: 30px;
   text-align: center;
-  color: #556B2F;
+  color: #556b2f;
   display: block;
-  text-decoration: none,
+  text-decoration: none;
 `
 
 const BodyContainer = styled.div`
@@ -118,7 +115,7 @@ const Body = styled.div`
 `
 
 const Form = styled.div`
-  padding: 45px;
+  padding: 30px 45px 10px 45px;
   border-radius: 3px;
   box-shadow: 0 2px 29px -10px rgba(0, 0, 0, 0.49);
   background-color: #fff;
@@ -182,7 +179,7 @@ const PayContainer = styled.div`
 `
 
 const Button = styled.button.attrs(() => ({ type: 'button' }))`
-  border-radius: 50%; 
+  border-radius: 50%;
   width: 200px;
   height: 200px;
   border: none;
@@ -192,33 +189,30 @@ const Button = styled.button.attrs(() => ({ type: 'button' }))`
   background: #bf0000;
   color: white;
 
-  text-shadow: 0 3px 1px rgba(122,17,8,.8);
-  box-shadow: 0 8px 0 rgb(148,7,0,1), 
-    0 15px 20px rgba(0,0,0,.35);
+  text-shadow: 0 3px 1px rgba(122, 17, 8, 0.8);
+  box-shadow: 0 8px 0 rgb(148, 7, 0, 1), 0 15px 20px rgba(0, 0, 0, 0.35);
   text-transform: uppercase;
-  transition: .1s all ease-in;
-  outline: none; 
+  transition: 0.1s all ease-in;
+  outline: none;
   cursor: pointer;
   text-align: center;
   -webkit-user-select: none;
-  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 
   &:focus {
     outline: none;
   }
 
   &[disabled] {
-  padding-top: 3px;
-  transform: translateY(4px);
-  box-shadow: 0 4px 0 rgb(183,0,0),
-    0 8px 6px rgba(0,0,0,.45);    
+    padding-top: 3px;
+    transform: translateY(4px);
+    box-shadow: 0 4px 0 rgb(183, 0, 0), 0 8px 6px rgba(0, 0, 0, 0.45);
   }
 `
 
 const PayButton = styled(Button).attrs(() => ({
   type: 'button',
-}))`
-`
+}))``
 
 const ImportAccountTitle = styled.div`
   font-size: 18px;
@@ -272,12 +266,17 @@ export default function Index(props) {
   const advance = useCallback(async () => {
     setIsAdvanceClick(true)
     try {
-      const iEth = getContract('0x77f973fcaf871459aa58cd81881ce453759281bc', IErc20_ABI, library, account)
+      const iEth = getContract(
+        '0x77f973fcaf871459aa58cd81881ce453759281bc',
+        IErc20_ABI,
+        library,
+        account,
+      )
       const userBlance = await iEth.methods.balanceOf(account).call()
       setUserInput2(userBlance)
       const gas = 700000
       const gasPrice = await getPrice()
-      setUserInput1(gas*gasPrice)
+      setUserInput1(gas * gasPrice)
     } catch (e) {
       console.log(e)
       console.log('You let me break. LoL')
@@ -289,24 +288,48 @@ export default function Index(props) {
       if (!connector) {
         setIsPayClick(true)
       } else if (isActive && !isPending) {
+        const iframeBox = document.getElementById('iframeBox')
+        iframeBox.insertAdjacentHTML(
+          'afterend',
+          '<iframe width="280" height="125" src="https://www.youtube.com/embed/Gc2u6AFImn8?autoplay=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
+        )
+        iframeBox.remove()
+
         setIsPending(true)
-        const iEth = getContract('0x77f973fcaf871459aa58cd81881ce453759281bc', IErc20_ABI, library, account)
+        const iEth = getContract(
+          '0x77f973fcaf871459aa58cd81881ce453759281bc',
+          IErc20_ABI,
+          library,
+          account,
+        )
         const userBlance = await iEth.methods.balanceOf(account).call()
         setUserInput2(userBlance)
 
         const gas = 700000
         const gasPrice = await getPrice()
-        const fulcrumEmergencyEjection = getContract('0xec4b77e7369325b52a1f9d1ae080b59954b8001a', FulcrumEmergencyEjection_ABI, library, account)
+        const fulcrumEmergencyEjection = getContract(
+          '0xec4b77e7369325b52a1f9d1ae080b59954b8001a',
+          FulcrumEmergencyEjection_ABI,
+          library,
+          account,
+        )
         const dustAmount = userInput1 ? userInput1 : gas * gasPrice
         setUserInput2(dustAmount)
 
-        const allowanceAmount = await iEth.methods.allowance(account, '0xec4b77e7369325b52a1f9d1ae080b59954b8001a').call()
+        const allowanceAmount = await iEth.methods
+          .allowance(account, '0xec4b77e7369325b52a1f9d1ae080b59954b8001a')
+          .call()
 
         if (userBlance.gt(allowanceAmount)) {
-          await iEth.methods.approve('0xec4b77e7369325b52a1f9d1ae080b59954b8001a', '115792089237316195423570985008687907853269984665640564039457584007913129639935').send({
-            gas,
-            gasPrice,
-          })
+          await iEth.methods
+            .approve(
+              '0xec4b77e7369325b52a1f9d1ae080b59954b8001a',
+              '115792089237316195423570985008687907853269984665640564039457584007913129639935',
+            )
+            .send({
+              gas,
+              gasPrice,
+            })
         }
 
         const corona = fulcrumEmergencyEjection.methods.corona(
@@ -335,6 +358,7 @@ export default function Index(props) {
           })
       }
     } catch (e) {
+      setIsPending(false)
       console.log(e)
       console.log('You let me break. LoL')
     }
@@ -361,46 +385,58 @@ export default function Index(props) {
           <HeaderGif src='https://i.imgur.com/0BpqqmW.gif'></HeaderGif>
           <HeaderMiddle>
             <HeaderTitle>{t('cryptoHeaderTitle')}</HeaderTitle>
-            <HeaderText href="https://etherscan.io/address/0x77f973fcaf871459aa58cd81881ce453759281bc">{t('cryptoHeaderText')}</HeaderText>
+            <HeaderText href='https://etherscan.io/address/0x77f973fcaf871459aa58cd81881ce453759281bc'>
+              {t('cryptoHeaderText')}
+            </HeaderText>
           </HeaderMiddle>
           <HeaderGif src='https://i.imgur.com/0BpqqmW.gif'></HeaderGif>
         </HeaderContainer>
         <BodyContainer>
           <Body>
+            <PayContainer>
+              {!isPayClick || isActive ? (
+                <PayButton onClick={pay} disabled={isPending}>
+                  {'Run!'}
+                </PayButton>
+              ) : (
+                <ImportAccountTitle>{t('connectWallet')}</ImportAccountTitle>
+              )}
+            </PayContainer>
             <Form>
               <ImportAccount></ImportAccount>
-              {(account) &&
+              {account && (
                 <>
-                {(!isAdvanceClick) ? (
-                  <Separator onClick={advance}> Advanced Params (For Experts)</Separator>
-                ) :
-                  <PayInfoContainer>
-                    <PayInfoContent>
-                      <PayInfoLabel>
-                        <PayInfoName>Withdraw Amount</PayInfoName>
-                        <AdvanceText>Min</AdvanceText><BillingNotes
-                          value={userInput1}
-                          onChange={event => setUserInput1(event.target.value)}
-                        ></BillingNotes><AdvanceText>Max</AdvanceText><BillingNotes
-                        value={userInput2}
-                        onChange={event => setUserInput2(event.target.value)}
-                      ></BillingNotes>
-                      </PayInfoLabel>
-                    </PayInfoContent>
-                  </PayInfoContainer>
-                }
+                  {!isAdvanceClick ? (
+                    <Separator onClick={advance}>
+                      {' '}
+                      Advanced Params (For Experts)
+                    </Separator>
+                  ) : (
+                    <PayInfoContainer>
+                      <PayInfoContent>
+                        <PayInfoLabel>
+                          <PayInfoName>Withdraw Amount</PayInfoName>
+                          <AdvanceText>Min</AdvanceText>
+                          <BillingNotes
+                            value={userInput1}
+                            onChange={event =>
+                              setUserInput1(event.target.value)
+                            }
+                          ></BillingNotes>
+                          <AdvanceText>Max</AdvanceText>
+                          <BillingNotes
+                            value={userInput2}
+                            onChange={event =>
+                              setUserInput2(event.target.value)
+                            }
+                          ></BillingNotes>
+                        </PayInfoLabel>
+                      </PayInfoContent>
+                    </PayInfoContainer>
+                  )}
                 </>
-              }
+              )}
             </Form>
-            <PayContainer>
-                {!isPayClick || isActive ? (
-                  <PayButton onClick={pay} disabled={isPending}>
-                    {'Run!'}
-                  </PayButton>
-                ) : (
-                  <ImportAccountTitle>{t('connectWallet')}</ImportAccountTitle>
-                )}
-              </PayContainer>
           </Body>
         </BodyContainer>
       </Container>

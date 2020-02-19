@@ -1,9 +1,7 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 import styled from 'styled-components'
-
-import { ReactComponent as LanguageIcon } from '../assets/language.svg'
-import { ReactComponent as DropdownIcon } from '../assets/dropdown.svg'
 
 const FooterContainer = styled.div`
   margin-top: 40px;
@@ -15,9 +13,9 @@ const FooterContainer = styled.div`
 
 const FooterTop = styled.div`
   width: 100%;
-  height: 200px;
-  padding-top: 56px;
+  height: 40px;
   background-color: ${({ theme }) => theme.colors.offWhite};
+  margin-top: 85px;
 `
 
 const FooterBottom = styled.div`
@@ -36,12 +34,76 @@ const FooterBottom = styled.div`
 `
 
 const FooterActions = styled.div`
-  width: 90%;
-  max-width: 800px;
+  width: 80%;
   margin: 0 auto;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  align-items: center;
+`
+
+const SocialLinks = styled.div`
+  display: flex;
+  align-items: center;
+
+  > * {
+    margin-top: 16px;
+  }
+
+  > *:not(:last-child) {
+    margin-right: 16px;
+  }
+`
+
+const OtherLinks = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+
+  > * {
+    margin-top: 16px;
+  }
+
+  > *:not(:last-child) {
+    margin-right: 32px;
+  }
+`
+
+const FooterText = styled.a`
+  font-size: 16px;
+  font-weight: 500;
+  font-family: ${({ theme }) => theme.fontFamilies.roboto};
+  color: ${({ theme }) => theme.colors.blueGray400};
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+
+  > *:not(:first-child) {
+    margin-left: 8px;
+  }
+`
+
+const ExternalLink = styled.a`
+  font-size: 16px;
+  font-weight: 500;
+  font-family: ${({ theme }) => theme.fontFamilies.roboto};
+  color: ${({ theme }) => theme.colors.blueGray400};
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+
+  > *:not(:first-child) {
+    margin-left: 8px;
+  }
+`
+
+const InternalLink = styled(Link)`
+  font-size: 16px;
+  font-weight: 500;
+  font-family: ${({ theme }) => theme.fontFamilies.roboto};
+  color: ${({ theme }) => theme.colors.blueGray400};
+  text-decoration: none;
+  display: flex;
   align-items: center;
 `
 
@@ -76,22 +138,6 @@ const LanguageSelect = styled.select`
   }
 `
 
-const StyledLanguageIcon = styled(LanguageIcon)`
-  position: absolute;
-  left: 10px;
-  top: 8px;
-  width: 24px;
-  height: 24px;
-`
-
-const StyledLanguageDropdown = styled(DropdownIcon)`
-  position: absolute;
-  right: 10px;
-  top: 10px;
-  width: 20px;
-  height: 20px;
-`
-
 export default function Footer() {
   const { t, i18n } = useTranslation()
 
@@ -101,6 +147,39 @@ export default function Footer() {
 
   return (
     <FooterContainer>
+      <FooterTop>
+        <FooterActions>
+          <SocialLinks>
+            <ExternalLink href='https://pelith.com' target='_blank'>
+              © 2020 Pelith, Inc.
+            </ExternalLink>
+            <ExternalLink href='https://easydai.app/' target='_blank'>
+              EasyDAI
+            </ExternalLink>
+            <ExternalLink href='https://eauth.pelith.com' target='_blank'>
+              Eauth
+            </ExternalLink>
+            <ExternalLink
+              href='https://devpost.com/software/crypto-structured-fund'
+              target='_blank'
+            >
+              Crypto Structured Fund
+            </ExternalLink>
+          </SocialLinks>
+          <OtherLinks>
+            <FooterText>Fulcrum Emergency Ejection</FooterText>
+            <ExternalLink href='https://github.com/pelith' target='_blank'>
+              Github
+            </ExternalLink>
+            <ExternalLink
+              href='https://etherscan.io/address/0xec4b77e7369325b52a1f9d1ae080b59954b8001a#code'
+              target='_blank'
+            >
+              Contract
+            </ExternalLink>
+          </OtherLinks>
+        </FooterActions>
+      </FooterTop>
     </FooterContainer>
   )
 }

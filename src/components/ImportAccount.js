@@ -3,9 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useWeb3React } from '@web3-react/core'
 import styled from 'styled-components'
 import BigNumber from 'bignumber.js'
-import {
-  getContract,
-} from '../utils'
+import { getContract } from '../utils'
 
 import IErc20_ABI from '../constants/abis/iErc20.json'
 import Erc20_ABI from '../constants/abis/erc20.json'
@@ -28,17 +26,30 @@ const ImportAccountContainer = styled.div`
 
 const ImportAccountBox = styled.div`
   display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+`
+
+const ValueBox = styled.div`
+  display: flex;
+  flex-direction: column;
 `
 
 const ImportAccountTitle = styled.div`
+  font-family: Hack, monospace;
   font-size: 18px;
   font-weight: 500;
   font-style: normal;
   font-stretch: normal;
-  line-height: normal;
   letter-spacing: normal;
-  text-align: center;
-  margin: 30px 0 20px;
+`
+
+const ImportAccountValue = styled.div`
+  font-family: Hack, monospace;
+  font-size: 18px;
+  font-weight: 500;
+  font-style: normal;
+  font-stretch: normal;
 `
 
 const Text = styled.div`
@@ -53,6 +64,7 @@ const Text = styled.div`
 `
 
 const ImportAccountContent = styled.div`
+  font-family: Hack, monospace;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -170,9 +182,10 @@ const ItemButtonName = styled.div`
 `
 
 const UnconnectorButton = styled.button`
-  width: 20%;
+  margin-right: auto;
+  width: 80%;
   height: 40px;
-  margin: 16px 40px 32px 40px;
+  margin: 24px 0 0 0;
   padding: 0;
   border: none;
   border-radius: 20px;
@@ -182,70 +195,92 @@ const UnconnectorButton = styled.button`
   font-weight: 500;
   font-family: ${({ theme }) => theme.fontFamilies.notoSans};
   letter-spacing: 1px;
-  display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
 `
 
+const IframeBox = styled.div`
+  width: 280px;
+  height: 125px;
+  background-color: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`
+
 export default function ImportAccount() {
   const { t } = useTranslation()
 
-
-  const { account, active, activate, deactivate, connector, library } = useWeb3React()
+  const {
+    account,
+    active,
+    activate,
+    deactivate,
+    connector,
+    library,
+  } = useWeb3React()
 
   const isDetectedWeb3 = !!window.ethereum || !!window.web3
 
   const [balance, setbalance] = useState(0)
   const [ibalance, setIBalance] = useState(0)
 
-  const balanceTest = useMemo(
-    () => {
-      (async ()=> {
+  const balanceTest = useMemo(() => {
+    ;(async () => {
+      try {
+        if (active && connector) {
+          const iEth = getContract(
+            '0x77f973fcaf871459aa58cd81881ce453759281bc',
+            IErc20_ABI,
+            library,
+            account,
+          )
+          const test = new BigNumber(
+            await iEth.methods.balanceOf(account).call(),
+          )
+
+          setbalance(test.div(1e18).toString())
+        } else {
+          setbalance(0)
+        }
+      } catch (e) {
+        console.log(e)
+      }
+    })()
+  }, [active, connector])
+
+  const iBalanceTest = useMemo(() => {
+    ;(async () => {
+      const a = async () => {
         try {
-          if (active && connector){
-            const iEth = getContract('0x77f973fcaf871459aa58cd81881ce453759281bc', IErc20_ABI, library, account)
-            const test = new BigNumber(await iEth.methods.balanceOf(account).call())
-          
-            setbalance(test.div(1e18).toString())
+          if (active && connector) {
+            const wEth = getContract(
+              '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+              Erc20_ABI,
+              library,
+              account,
+            )
+            const test = new BigNumber(
+              await wEth.methods
+                .balanceOf('0x77f973fcaf871459aa58cd81881ce453759281bc')
+                .call(),
+            )
+
+            setIBalance(test.gt(0) ? test.div(1e18).toString() : 0)
+          } else {
+            setIBalance(0)
           }
-          else {
-            setbalance(0)
-          }
-          
         } catch (e) {
           console.log(e)
         }
-      })()
-    },
-    [active, connector],
-  )
-
-  const iBalanceTest = useMemo(
-    () => {
-      (async ()=> {
-        const a = async () => {try {
-            if (active && connector){
-              const wEth = getContract('0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', Erc20_ABI, library, account)
-              const test = new BigNumber(await wEth.methods.balanceOf('0x77f973fcaf871459aa58cd81881ce453759281bc').call())
-            
-              setIBalance(test.gt(0) ? test.div(1e18).toString() : 0)
-            }
-            else {
-              setIBalance(0)
-            }
-          } catch (e) {
-            console.log(e)
-          }
-        }
+      }
+      await a()
+      setInterval(async () => {
         await a()
-        setInterval( async () => {
-          await a()
-        }, 120000)
-      })()
-    },
-    [active, connector],
-  )
+      }, 120000)
+    })()
+  }, [active, connector])
 
   const isInjected = useMemo(() => active && connector === injectedConnector, [
     active,
@@ -319,6 +354,12 @@ export default function ImportAccount() {
     }
   }, [connector, deactivate])
 
+  const particialAddress = account => {
+    const prefixAddress = account.slice(0, 8)
+    const suffixAddress = account.slice(account.length - 8, account.length)
+    return `${prefixAddress}...${suffixAddress}`
+  }
+
   return (
     <ImportAccountContainer>
       {(isInjected ||
@@ -328,14 +369,22 @@ export default function ImportAccount() {
         isPortisConnected) && (
         <>
           <ImportAccountBox>
-            <ImportAccountTitle>{account}</ImportAccountTitle>
-            <UnconnectorButton onClick={unconnectWallet}>
-              {t('logout')}
-            </UnconnectorButton>
+            <ValueBox>
+              <ImportAccountTitle>
+                Account:&nbsp;{particialAddress(account)}
+              </ImportAccountTitle>
+              <ImportAccountValue>
+                ETH:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{balance}
+              </ImportAccountValue>
+              <ImportAccountValue>
+                iETH:&nbsp;&nbsp;&nbsp;&nbsp;{ibalance}
+              </ImportAccountValue>
+              <UnconnectorButton onClick={unconnectWallet}>
+                {t('logout')}
+              </UnconnectorButton>
+            </ValueBox>
+            <IframeBox id='iframeBox'>{}</IframeBox>
           </ImportAccountBox>
-          <Text>{balance}</Text>
-          <Text>{ibalance}</Text>
-          {/* <iframe width="560" height="315" src="https://www.youtube.com/embed/Gc2u6AFImn8?autoplay=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> */}
         </>
       )}
       {!(
