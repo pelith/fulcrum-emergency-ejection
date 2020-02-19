@@ -5,7 +5,7 @@ import styled from 'styled-components'
 const HeaderContainer = styled.div`
   padding: 0 16px;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
 
   @media screen and (min-width: 600px) {
@@ -59,7 +59,7 @@ export default function Header() {
 
   return (
     <HeaderContainer>
-      <RocketText role='img' aria-label='rocket'>
+      <RocketText role='img' aria-label='rocket' style={{ textAlign: 'right' }}>
         🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀
       </RocketText>
       <LogoText>{t('title')}</LogoText>

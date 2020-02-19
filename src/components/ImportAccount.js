@@ -42,7 +42,6 @@ const ImportAccountBox = styled.div`
 const ValueBox = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
 `
 
 const ImportAccountTitle = styled.div`
@@ -384,7 +383,7 @@ export default function ImportAccount() {
                 Account:&nbsp;{particialAddress(account)}
               </ImportAccountTitle>
               <ImportAccountValue>
-                ETH:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{balance}
+                Your ETH:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{balance}
               </ImportAccountValue>
               <ImportAccountValue>
                 iETH:&nbsp;&nbsp;&nbsp;&nbsp;{ibalance}

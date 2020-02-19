@@ -150,7 +150,10 @@ export default function Footer() {
         <ExternalLink href='https://easydai.app/' target='_blank'>
           EasyDAI
         </ExternalLink>
-        <ExternalLink href='https://eauth.pelith.com' target='_blank'>
+        <ExternalLink
+          href='https://github.com/pelith/node-eauth-server'
+          target='_blank'
+        >
           Eauth
         </ExternalLink>
         <ExternalLink
