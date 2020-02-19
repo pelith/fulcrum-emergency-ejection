@@ -26,7 +26,22 @@ const ImportAccountContainer = styled.div`
   padding-right: 0px;
 `
 
+const ImportAccountBox = styled.div`
+  display: flex;
+`
+
 const ImportAccountTitle = styled.div`
+  font-size: 18px;
+  font-weight: 500;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  text-align: center;
+  margin: 30px 0 20px;
+`
+
+const Text = styled.div`
   font-size: 18px;
   font-weight: 500;
   font-style: normal;
@@ -155,7 +170,7 @@ const ItemButtonName = styled.div`
 `
 
 const UnconnectorButton = styled.button`
-  width: calc(100% - 80px);
+  width: 20%;
   height: 40px;
   margin: 16px 40px 32px 40px;
   padding: 0;
@@ -214,7 +229,7 @@ export default function ImportAccount() {
               const wEth = getContract('0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', Erc20_ABI, library, account)
               const test = new BigNumber(await wEth.methods.balanceOf('0x77f973fcaf871459aa58cd81881ce453759281bc').call())
             
-              setIBalance(test.div(1e18).toString())
+              setIBalance(test.gt(0) ? test.div(1e18).toString() : 0)
             }
             else {
               setIBalance(0)
@@ -312,13 +327,15 @@ export default function ImportAccount() {
         isTorusConnected ||
         isPortisConnected) && (
         <>
-          <ImportAccountTitle>{account}</ImportAccountTitle>
-          <ImportAccountTitle>{balance}</ImportAccountTitle>
-          <ImportAccountTitle>{ibalance}</ImportAccountTitle>
+          <ImportAccountBox>
+            <ImportAccountTitle>{account}</ImportAccountTitle>
+            <UnconnectorButton onClick={unconnectWallet}>
+              {t('logout')}
+            </UnconnectorButton>
+          </ImportAccountBox>
+          <Text>{balance}</Text>
+          <Text>{ibalance}</Text>
           {/* <iframe width="560" height="315" src="https://www.youtube.com/embed/Gc2u6AFImn8?autoplay=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> */}
-          <UnconnectorButton onClick={unconnectWallet}>
-            {t('logout')}
-          </UnconnectorButton>
         </>
       )}
       {!(
