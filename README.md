@@ -1,6 +1,6 @@
 # Fulcrum Emergency Ejection
 
-How it works.
+## How it works
 
 Fulcrum Emergency Ejection is a smart contract that automatically calculates the maximal claimable amount in Fulcorm iETH pool. It helps you to withdraw stucked fund as much as possible.
 
@@ -31,8 +31,6 @@ If there is an error about `./build/Release/scrypt` not found, please enter the 
 ```
 cp node_modules/scrypt/build/Release/scrypt.node node_modules/scrypt/build/Release/scrypt
 ```
-
-Once the dev server launched correctly, please navigate to [here](http://localhost:3000?data=ewogICJ1dWlkIjogIjEyMzQiLAogICJjcnlwdG9jdXJyZW5jeSI6IHsKICAgICJuYW1lIjogIkVSQzc3NyIsCiAgICAidG9rZW4iOiAiMHhhRkY0NDgxRDEwMjcwRjUwZjIwM0UwNzYzZTI1OTc3NzYwNjhDQmM1IiwKICAgICJyZWN2IjogIjB4NTM1OUU3NTQ0ZDQ4ZGI3ODE3MkYxMEZmQTMyMmExZDFiMjVFOTI1OSIsCiAgICAiZGVjaW1hbCI6ICIxOCIsCiAgICAiYW1vdW50IjogIjEwMDAwMDAwMDAwMDAwMDAwMDAiLAogICAgImFwaSI6ICJodHRwOi8vZXhhbXBsZS5jb20iCiAgfSwKICAiY3JlZGl0Y2FyZCI6IHsKICAgICJrZXkiOiAicGtfdGVzdF9YMkNLSXdaaENFeDk5dVk4Vmc4d2d0RlQiLAogICAgImFtb3VudCI6ICIxIiwKICAgICJjdXJyZW5jeSI6ICJOVEQiLAogICAgImFwaSI6ICJodHRwOi8vbG9jYWxob3N0IgogIH0KfQ==) and you should see 3 button (Cryptocurrency Pay, Credit Card pay, and Mobile Brower) on the interface.
 
 ### Build
 
