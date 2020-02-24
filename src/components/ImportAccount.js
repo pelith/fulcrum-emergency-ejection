@@ -198,16 +198,9 @@ const UnconnectorButton = styled.button`
   cursor: pointer;
 `
 
-const IframeBox = styled.div`
-  width: 280px;
-  height: 125px;
-  background-color: #000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`
-
 export default function ImportAccount(props) {
+  const { videoChild, token } = props
+
   const bond = {
     eth: '0x77f973fcaf871459aa58cd81881ce453759281bc',
     usdc: '0xF013406A0B1d544238083DF0B93ad0d2cBE0f65f',
@@ -222,8 +215,6 @@ export default function ImportAccount(props) {
     eth: 1e18,
     usdc: 1e6,
   }
-
-  const { token } = props
   const { t } = useTranslation()
 
   const {
@@ -389,7 +380,7 @@ export default function ImportAccount(props) {
                 {t('logout')}
               </UnconnectorButton>
             </ValueBox>
-            <IframeBox id='iframeBox'>{}</IframeBox>
+            {videoChild}
           </ImportAccountBox>
         </>
       )}

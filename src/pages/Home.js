@@ -275,6 +275,15 @@ const Paragraph = styled.p`
   font-size: 14px;
 `
 
+const BlackBox = styled.div`
+  width: 280px;
+  height: 125px;
+  background-color: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`
+
 export default function Index(props) {
   const { t } = useTranslation()
   const { account, active, library } = useWeb3React()
@@ -294,6 +303,7 @@ export default function Index(props) {
   const [amountMin, setAmountMin] = useState(0)
   const [amountMax, setAmountMax] = useState(0)
   const [email, setEmail] = useState('')
+  const [isPlay, setIsPlay] = useState(false)
 
   const [isShowConnectMessage, setIsShowConnectMessage] = useState(false)
   useEffect(() => {
@@ -331,12 +341,10 @@ export default function Index(props) {
     }
 
     // play happy youtube video
-    const iframeBox = document.getElementById('iframeBox')
-    iframeBox.insertAdjacentHTML(
-      'afterend',
-      '<iframe width="280" height="125" src="https://www.youtube.com/embed/Gc2u6AFImn8?autoplay=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
-    )
-    iframeBox.remove()
+    setIsPlay(false)
+    setTimeout(() => {
+      setIsPlay(true)
+    }, 300)
 
     try {
       setIsPending(true)
@@ -441,7 +449,24 @@ export default function Index(props) {
             )}
           </RunButtonWrapper>
           <Box>
-            <ImportAccount token={token}></ImportAccount>
+            <ImportAccount
+              token={token}
+              videoChild={
+                isPlay ? (
+                  <iframe
+                    title='happy video'
+                    width='280'
+                    height='125'
+                    src='https://www.youtube.com/embed/Gc2u6AFImn8?autoplay=1'
+                    frameborder='0'
+                    allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture'
+                    allowfullscreen
+                  />
+                ) : (
+                  <BlackBox id='iframeBox' />
+                )
+              }
+            />
             {account && (
               <>
                 {!isAdvanceClick ? (
