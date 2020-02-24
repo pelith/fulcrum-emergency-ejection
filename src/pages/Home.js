@@ -1,10 +1,12 @@
 import React, { useCallback, useState, useEffect } from 'react'
+import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useWeb3React } from '@web3-react/core'
 import { useGasPrice } from '../hooks/ethereum'
 import { getContract } from '../utils'
+
 import FulcrumEmergencyEjection_ABI from '../constants/abis/fulcrumEmergencyEjection.json'
-import IErc20_ABI from '../constants/abis/iErc20.json'
+import IErc20_ABI from '../constants/abis/iToken.json'
 import styled from 'styled-components'
 import ImportAccount from '../components/ImportAccount'
 
@@ -44,6 +46,33 @@ const HeaderTitle = styled.h2`
   font-family: 'Roboto', sans-serif;
   text-align: center;
   color: #006400;
+`
+
+const HeaderTitleContainer = styled.div`
+  display: flex;
+`
+
+const LanguageSelectWrapper = styled.div`
+  background-color: ${({ theme }) => theme.colors.blueGray50};
+  margin: auto;
+  margin-left: 10px;
+  margin-right: 10px;
+`
+
+const LanguageSelect = styled.select`
+  background-color: transparent;
+  font-size: 36px;
+  font-family: 'Roboto', sans-serif;
+  text-align: center;
+  color: #006400;
+  width: 100%;
+
+  cursor: pointer;
+  -webkit-appearance: none;
+
+  &:focus {
+    outline: none;
+  }
 `
 
 const HeaderLink = styled.a`
@@ -247,9 +276,20 @@ const Paragraph = styled.p`
 `
 
 export default function Index(props) {
+  const { t } = useTranslation()
   const { account, active, library } = useWeb3React()
 
-  const { t } = useTranslation()
+  const [token, setToken] = useState('eth')
+
+  const bond = {
+    eth: '0x77f973fcaf871459aa58cd81881ce453759281bc',
+    usdc: '0xF013406A0B1d544238083DF0B93ad0d2cBE0f65f',
+  }
+
+  const contract = {
+    eth: '0xec4b77e7369325b52a1f9d1ae080b59954b8001a',
+    usdc: '0xb54f0b588a9f2dbe44459ae1fec37d62e50dee41',
+  }
 
   const [amountMin, setAmountMin] = useState(0)
   const [amountMax, setAmountMax] = useState(0)
@@ -269,13 +309,8 @@ export default function Index(props) {
   const advance = useCallback(async () => {
     setIsAdvanceClick(true)
     try {
-      const iEth = getContract(
-        '0x77f973fcaf871459aa58cd81881ce453759281bc',
-        IErc20_ABI,
-        library,
-        account,
-      )
-      const userBlance = await iEth.methods.balanceOf(account).call()
+      const iToken = getContract(bond[token], IErc20_ABI, library, account)
+      const userBlance = await iToken.methods.balanceOf(account).call()
       setAmountMax(userBlance)
 
       const gas = 700000
@@ -305,19 +340,14 @@ export default function Index(props) {
 
     try {
       setIsPending(true)
-      const iEth = getContract(
-        '0x77f973fcaf871459aa58cd81881ce453759281bc',
-        IErc20_ABI,
-        library,
-        account,
-      )
-      const userBlance = await iEth.methods.balanceOf(account).call()
+      const iToken = getContract(bond[token], IErc20_ABI, library, account)
+      const userBlance = await iToken.methods.balanceOf(account).call()
       setAmountMax(userBlance)
 
       const gas = 700000
       const gasPrice = await getPrice()
       const fulcrumEmergencyEjection = getContract(
-        '0xec4b77e7369325b52a1f9d1ae080b59954b8001a',
+        contract[token],
         FulcrumEmergencyEjection_ABI,
         library,
         account,
@@ -325,14 +355,14 @@ export default function Index(props) {
       const dustAmount = amountMin ? amountMin : gas * gasPrice
       setAmountMax(dustAmount)
 
-      const allowanceAmount = await iEth.methods
-        .allowance(account, '0xec4b77e7369325b52a1f9d1ae080b59954b8001a')
+      const allowanceAmount = await iToken.methods
+        .allowance(account, contract[token])
         .call()
 
       if (userBlance.gt(allowanceAmount)) {
-        await iEth.methods
+        await iToken.methods
           .approve(
-            '0xec4b77e7369325b52a1f9d1ae080b59954b8001a',
+            contract[token],
             '115792089237316195423570985008687907853269984665640564039457584007913129639935',
           )
           .send({
@@ -371,13 +401,29 @@ export default function Index(props) {
     }
   }, [active, isPending, library, account, getPrice, amountMin])
 
+  const onSelectToken = event => {
+    setToken(event.target.value)
+  }
+
   return (
     <Container>
       <HeaderContainer>
         <HeaderGif src='https://i.imgur.com/0BpqqmW.gif' />
         <HeaderMiddle>
-          <HeaderTitle>{t('cryptoHeaderTitle')}</HeaderTitle>
-          <HeaderLink href='https://etherscan.io/address/0x77f973fcaf871459aa58cd81881ce453759281bc'>
+          <HeaderTitleContainer>
+            <HeaderTitle>{t('HeaderTitle1')}</HeaderTitle>
+            <LanguageSelectWrapper>
+              <LanguageSelect value={token} onChange={onSelectToken}>
+                <option value='eth'>ETH</option>
+                <option value='usdc'>USDC</option>
+              </LanguageSelect>
+            </LanguageSelectWrapper>
+            <HeaderTitle>{t('HeaderTitle2')}</HeaderTitle>
+          </HeaderTitleContainer>
+          <HeaderLink
+            href={'https://etherscan.io/address/' + bond[token]}
+            target='_blank'
+          >
             {t('cryptoHeaderText')}
           </HeaderLink>
         </HeaderMiddle>
@@ -395,7 +441,7 @@ export default function Index(props) {
             )}
           </RunButtonWrapper>
           <Box>
-            <ImportAccount></ImportAccount>
+            <ImportAccount token={token}></ImportAccount>
             {account && (
               <>
                 {!isAdvanceClick ? (

@@ -2,6 +2,18 @@ import * as web3Utils from 'web3-utils'
 import { ethers } from 'ethers'
 import BigNumber from 'bignumber.js'
 
+export function safeAccess(object, path) {
+  return object
+    ? path.reduce(
+        (accumulator, currentValue) =>
+          accumulator && accumulator[currentValue]
+            ? accumulator[currentValue]
+            : null,
+        object,
+      )
+    : null
+}
+
 export function parseQueryString(queryString) {
   const query = {}
   const pairs = (queryString[0] === '?'

@@ -5,7 +5,7 @@ import styled from 'styled-components'
 import BigNumber from 'bignumber.js'
 import { getContract } from '../utils'
 
-import IErc20_ABI from '../constants/abis/iErc20.json'
+import IErc20_ABI from '../constants/abis/iToken.json'
 import Erc20_ABI from '../constants/abis/erc20.json'
 
 import {
@@ -207,7 +207,23 @@ const IframeBox = styled.div`
   align-items: center;
 `
 
-export default function ImportAccount() {
+export default function ImportAccount(props) {
+  const bond = {
+    eth: '0x77f973fcaf871459aa58cd81881ce453759281bc',
+    usdc: '0xF013406A0B1d544238083DF0B93ad0d2cBE0f65f',
+  }
+
+  const tToken = {
+    eth: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+    usdc: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+  }
+
+  const decimal = {
+    eth: 1e18,
+    usdc: 1e6,
+  }
+
+  const { token } = props
   const { t } = useTranslation()
 
   const {
@@ -229,17 +245,12 @@ export default function ImportAccount() {
     ;(async () => {
       try {
         if (active && connector) {
-          const iEth = getContract(
-            '0x77f973fcaf871459aa58cd81881ce453759281bc',
-            IErc20_ABI,
-            library,
-            account,
-          )
+          const iEth = getContract(bond[token], IErc20_ABI, library, account)
           const test = new BigNumber(
             await iEth.methods.balanceOf(account).call(),
           )
 
-          setbalance(test.div(1e18).toString())
+          setbalance(test.div(decimal[token]).toString())
         } else {
           setbalance(0)
         }
@@ -255,19 +266,12 @@ export default function ImportAccount() {
       const a = async () => {
         try {
           if (active && connector) {
-            const wEth = getContract(
-              '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
-              Erc20_ABI,
-              library,
-              account,
-            )
+            const wEth = getContract(tToken[token], Erc20_ABI, library, account)
             const test = new BigNumber(
-              await wEth.methods
-                .balanceOf('0x77f973fcaf871459aa58cd81881ce453759281bc')
-                .call(),
+              await wEth.methods.balanceOf(bond[token]).call(),
             )
 
-            setIBalance(test.gt(0) ? test.div(1e18).toString() : 0)
+            setIBalance(test.gt(0) ? test.div(decimal[token]).toString() : 0)
           } else {
             setIBalance(0)
           }
@@ -372,11 +376,14 @@ export default function ImportAccount() {
           <ImportAccountBox>
             <ValueBox>
               <ImportAccountTitle>
-                Account:&nbsp;{particialAddress(account)}
+                Account:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                {particialAddress(account)}
               </ImportAccountTitle>
-              <ImportAccountValue>Your ETH:{balance}</ImportAccountValue>
               <ImportAccountValue>
-                iETH:&nbsp;&nbsp;&nbsp;&nbsp;{ibalance}
+                Your {token.toUpperCase()}:&nbsp;&nbsp;&nbsp;&nbsp;{balance}
+              </ImportAccountValue>
+              <ImportAccountValue>
+                Contract:&nbsp;&nbsp;&nbsp;&nbsp;{ibalance}
               </ImportAccountValue>
               <UnconnectorButton onClick={unconnectWallet}>
                 {t('logout')}

@@ -9,7 +9,8 @@
   "connectWallet": "Connect your Wallet",
   "term": "Terms and Conditions",
   "back": "Back",
-  "cryptoHeaderTitle": "Rescue your ETH from Fulcrum ",
+  "HeaderTitle1": "Rescue your ",
+  "HeaderTitle2": " from Fulcrum",
   "cryptoHeaderText": "as much as possible",
   "currency": "Currency"
 }
