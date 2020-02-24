@@ -51,6 +51,7 @@ const ImportAccountTitle = styled.div`
   font-style: normal;
   font-stretch: normal;
   letter-spacing: normal;
+  width: 140px;
 `
 
 const ImportAccountValue = styled.div`
@@ -59,6 +60,12 @@ const ImportAccountValue = styled.div`
   font-weight: 500;
   font-style: normal;
   font-stretch: normal;
+  letter-spacing: normal;
+  width: 100px;
+`
+
+const ImportAccountTitleContainer = styled.div`
+  display: flex;
 `
 
 const ImportAccountContent = styled.div`
@@ -204,6 +211,7 @@ export default function ImportAccount(props) {
   const bond = {
     eth: '0x77f973fcaf871459aa58cd81881ce453759281bc',
     usdc: '0xF013406A0B1d544238083DF0B93ad0d2cBE0f65f',
+    dai: '0x493C57C4763932315A328269E1ADaD09653B9081',
   }
 
   const tToken = {
@@ -213,6 +221,7 @@ export default function ImportAccount(props) {
 
   const decimal = {
     eth: 1e18,
+    dai: 1e18,
     usdc: 1e6,
   }
   const { t } = useTranslation()
@@ -231,17 +240,17 @@ export default function ImportAccount(props) {
   const [balance, setbalance] = useState(0)
   const [ibalance, setIBalance] = useState(0)
 
-  // get user iETH balance
+  // get user iToken balance
   useMemo(() => {
     ;(async () => {
       try {
         if (active && connector) {
-          const iEth = getContract(bond[token], IErc20_ABI, library, account)
-          const test = new BigNumber(
-            await iEth.methods.balanceOf(account).call(),
+          const iToken = getContract(bond[token], IErc20_ABI, library, account)
+          const amount = new BigNumber(
+            await iToken.methods.balanceOf(account).call(),
           )
 
-          setbalance(test.div(decimal[token]).toString())
+          setbalance(amount.div(decimal[token]).toString())
         } else {
           setbalance(0)
         }
@@ -257,12 +266,38 @@ export default function ImportAccount(props) {
       const a = async () => {
         try {
           if (active && connector) {
-            const wEth = getContract(tToken[token], Erc20_ABI, library, account)
-            const test = new BigNumber(
-              await wEth.methods.balanceOf(bond[token]).call(),
-            )
+            if (token == 'dai') {
+              const iToken = getContract(
+                bond[token],
+                IErc20_ABI,
+                library,
+                account,
+              )
+              const totalAssetSupply = new BigNumber(
+                await iToken.methods.totalAssetSupply().call(),
+              )
+              const totalAssetBorrow = new BigNumber(
+                await iToken.methods.totalAssetBorrow().call(),
+              )
+              const amount = totalAssetSupply.minus(totalAssetBorrow)
+              setIBalance(
+                amount.gt(0) ? amount.div(decimal[token]).toString() : 0,
+              )
+            } else {
+              const wEth = getContract(
+                tToken[token],
+                Erc20_ABI,
+                library,
+                account,
+              )
+              const amount = new BigNumber(
+                await wEth.methods.balanceOf(bond[token]).call(),
+              )
 
-            setIBalance(test.gt(0) ? test.div(decimal[token]).toString() : 0)
+              setIBalance(
+                amount.gt(0) ? amount.div(decimal[token]).toString() : 0,
+              )
+            }
           } else {
             setIBalance(0)
           }
@@ -366,16 +401,22 @@ export default function ImportAccount(props) {
         <>
           <ImportAccountBox>
             <ValueBox>
-              <ImportAccountTitle>
-                Account:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                {particialAddress(account)}
-              </ImportAccountTitle>
-              <ImportAccountValue>
-                Your {token.toUpperCase()}:&nbsp;&nbsp;&nbsp;&nbsp;{balance}
-              </ImportAccountValue>
-              <ImportAccountValue>
-                Contract:&nbsp;&nbsp;&nbsp;&nbsp;{ibalance}
-              </ImportAccountValue>
+              <ImportAccountTitleContainer>
+                <ImportAccountTitle>Account :</ImportAccountTitle>
+                <ImportAccountValue>
+                  {particialAddress(account)}
+                </ImportAccountValue>
+              </ImportAccountTitleContainer>
+              <ImportAccountTitleContainer>
+                <ImportAccountTitle>
+                  Your {token.toUpperCase()}:
+                </ImportAccountTitle>
+                <ImportAccountValue>{balance}</ImportAccountValue>
+              </ImportAccountTitleContainer>
+              <ImportAccountTitleContainer>
+                <ImportAccountTitle>Contract:</ImportAccountTitle>
+                <ImportAccountValue>{ibalance}</ImportAccountValue>
+              </ImportAccountTitleContainer>
               <UnconnectorButton onClick={unconnectWallet}>
                 {t('logout')}
               </UnconnectorButton>

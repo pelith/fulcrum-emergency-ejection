@@ -293,11 +293,13 @@ export default function Index(props) {
   const bond = {
     eth: '0x77f973fcaf871459aa58cd81881ce453759281bc',
     usdc: '0xF013406A0B1d544238083DF0B93ad0d2cBE0f65f',
+    dai: '0x493C57C4763932315A328269E1ADaD09653B9081',
   }
 
   const contract = {
     eth: '0xec4b77e7369325b52a1f9d1ae080b59954b8001a',
     usdc: '0xb54f0b588a9f2dbe44459ae1fec37d62e50dee41',
+    dai: '0x47ca2166a5b837e891e6e64e780d1b43fc0a4e95',
   }
 
   const [amountMin, setAmountMin] = useState(0)
@@ -424,6 +426,7 @@ export default function Index(props) {
               <LanguageSelect value={token} onChange={onSelectToken}>
                 <option value='eth'>ETH</option>
                 <option value='usdc'>USDC</option>
+                <option value='dai'>DAI</option>
               </LanguageSelect>
             </LanguageSelectWrapper>
             <HeaderTitle>{t('HeaderTitle2')}</HeaderTitle>
