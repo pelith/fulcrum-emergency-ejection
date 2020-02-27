@@ -51,7 +51,7 @@ const ImportAccountTitle = styled.div`
   font-style: normal;
   font-stretch: normal;
   letter-spacing: normal;
-  width: 140px;
+  width: 145px;
 `
 
 const ImportAccountValue = styled.div`
@@ -258,7 +258,7 @@ export default function ImportAccount(props) {
         console.log(e)
       }
     })()
-  }, [account, active, connector, library])
+  }, [account, active, bond, connector, decimal, library, token])
 
   // get eth amount in fulcrum pool
   useMemo(() => {
@@ -310,7 +310,7 @@ export default function ImportAccount(props) {
         await a()
       }, 120000)
     })()
-  }, [account, active, connector, library])
+  }, [account, active, bond, connector, decimal, library, tToken, token])
 
   const isInjected = useMemo(() => active && connector === injectedConnector, [
     active,
@@ -409,12 +409,14 @@ export default function ImportAccount(props) {
               </ImportAccountTitleContainer>
               <ImportAccountTitleContainer>
                 <ImportAccountTitle>
-                  Your {token.toUpperCase()}:
+                  Your i{token.toUpperCase()}:
                 </ImportAccountTitle>
                 <ImportAccountValue>{balance}</ImportAccountValue>
               </ImportAccountTitleContainer>
               <ImportAccountTitleContainer>
-                <ImportAccountTitle>Contract:</ImportAccountTitle>
+                <ImportAccountTitle>
+                  {token.toUpperCase()} in pool:
+                </ImportAccountTitle>
                 <ImportAccountValue>{ibalance}</ImportAccountValue>
               </ImportAccountTitleContainer>
               <UnconnectorButton onClick={unconnectWallet}>

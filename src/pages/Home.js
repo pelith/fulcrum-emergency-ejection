@@ -9,14 +9,18 @@ import FulcrumEmergencyEjection_ABI from '../constants/abis/fulcrumEmergencyEjec
 import IErc20_ABI from '../constants/abis/iToken.json'
 import styled from 'styled-components'
 import ImportAccount from '../components/ImportAccount'
+import Footer from '../components/Footer'
 
 const Container = styled.main`
   flex: 1 0 auto;
   width: 100%;
   min-height: calc(100vh - 96px - 143px);
-  background-color: #f7f8fb;
-
+  padding: 0 16px;
   background-color: transparent;
+
+  ${({ theme }) => theme.mediaQuery.md`
+    padding: 0 64px;
+  `}
 `
 
 const HeaderGif = styled.img`
@@ -416,142 +420,149 @@ export default function Index(props) {
   }
 
   return (
-    <Container>
-      <HeaderContainer>
-        <HeaderGif src='https://i.imgur.com/0BpqqmW.gif' />
-        <HeaderMiddle>
-          <HeaderTitleContainer>
-            <HeaderTitle>{t('HeaderTitle1')}</HeaderTitle>
-            <LanguageSelectWrapper>
-              <LanguageSelect value={token} onChange={onSelectToken}>
-                <option value='eth'>ETH</option>
-                <option value='usdc'>USDC</option>
-                <option value='dai'>DAI</option>
-              </LanguageSelect>
-            </LanguageSelectWrapper>
-            <HeaderTitle>{t('HeaderTitle2')}</HeaderTitle>
-          </HeaderTitleContainer>
-          <HeaderLink
-            href={'https://etherscan.io/address/' + bond[token]}
-            target='_blank'
-          >
-            {t('cryptoHeaderText')}
-          </HeaderLink>
-        </HeaderMiddle>
-        <HeaderGif src='https://i.imgur.com/0BpqqmW.gif' />
-      </HeaderContainer>
-      <BodyContainer>
-        <Body>
-          <RunButtonWrapper>
-            {isShowConnectMessage ? (
-              <ConnectWalletMessage>{t('connectWallet')}</ConnectWalletMessage>
-            ) : (
-              <RunButton onClick={run} disabled={isPending}>
-                Run!
-              </RunButton>
-            )}
-          </RunButtonWrapper>
-          <Box>
-            <ImportAccount
-              token={token}
-              videoChild={
-                isPlay ? (
-                  <iframe
-                    title='happy video'
-                    width='280'
-                    height='125'
-                    src='https://www.youtube.com/embed/Gc2u6AFImn8?autoplay=1'
-                    frameborder='0'
-                    allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture'
-                    allowfullscreen
-                  />
-                ) : (
-                  <BlackBox id='iframeBox' />
-                )
-              }
-            />
-            {account && (
-              <>
-                {!isAdvanceClick ? (
-                  <Separator onClick={advance}>
-                    Advanced Params (For Experts)
-                  </Separator>
-                ) : (
-                  <PayInfoContainer>
-                    <FormTitle>Withdraw Amount</FormTitle>
-                    <InputFieldGroup>
-                      <InputField>
-                        <InpetLabel>Min</InpetLabel>
-                        <NumberInput
-                          value={amountMin}
-                          onChange={event => setAmountMin(event.target.value)}
-                        />
-                      </InputField>
-                      <InputField>
-                        <InpetLabel>Max</InpetLabel>
-                        <NumberInput
-                          value={amountMax}
-                          onChange={event => setAmountMax(event.target.value)}
-                        />
-                      </InputField>
-                    </InputFieldGroup>
-                  </PayInfoContainer>
-                )}
-              </>
-            )}
-          </Box>
-          <Divider />
-          <Title>Subscribe Now for more DeFi products and tools</Title>
-          <div id='mc_embed_signup'>
-            <SubscribeForm
-              action='https://pelith.us4.list-manage.com/subscribe/post?u=60cf2da2a9c95713630d04bf4&amp;id=d9f24cce24'
-              method='post'
-              id='mc-embedded-subscribe-form'
-              name='mc-embedded-subscribe-form'
-              className='validate'
+    <>
+      <Container>
+        <HeaderContainer>
+          <HeaderGif src='https://i.imgur.com/0BpqqmW.gif' />
+          <HeaderMiddle>
+            <HeaderTitleContainer>
+              <HeaderTitle>{t('HeaderTitle1')}</HeaderTitle>
+              <LanguageSelectWrapper>
+                <LanguageSelect value={token} onChange={onSelectToken}>
+                  <option value='eth'>ETH</option>
+                  <option value='usdc'>USDC</option>
+                  <option value='dai'>DAI</option>
+                </LanguageSelect>
+              </LanguageSelectWrapper>
+              <HeaderTitle>{t('HeaderTitle2')}</HeaderTitle>
+            </HeaderTitleContainer>
+            <HeaderLink
+              href={'https://etherscan.io/address/' + bond[token]}
               target='_blank'
             >
-              <TextInput
-                type='email'
-                value={email}
-                onChange={event => setEmail(event.target.value)}
-                name='EMAIL'
-                className='email'
-                id='mce-EMAIL'
-                placeholder='email address'
-                required
+              {t('cryptoHeaderText')}
+            </HeaderLink>
+          </HeaderMiddle>
+          <HeaderGif src='https://i.imgur.com/0BpqqmW.gif' />
+        </HeaderContainer>
+        <BodyContainer>
+          <Body>
+            <RunButtonWrapper>
+              {isShowConnectMessage ? (
+                <ConnectWalletMessage>
+                  {t('connectWallet')}
+                </ConnectWalletMessage>
+              ) : (
+                <RunButton onClick={run} disabled={isPending}>
+                  Run!
+                </RunButton>
+              )}
+            </RunButtonWrapper>
+            <Box>
+              <ImportAccount
+                token={token}
+                videoChild={
+                  isPlay ? (
+                    <iframe
+                      title='happy video'
+                      width='280'
+                      height='125'
+                      src='https://www.youtube.com/embed/Gc2u6AFImn8?autoplay=1'
+                      frameborder='0'
+                      allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture'
+                      allowfullscreen
+                    />
+                  ) : (
+                    <BlackBox id='iframeBox' />
+                  )
+                }
               />
-              <SubscribeButton name='subscribe' id='mc-embedded-subscribe'>
-                Subscribe
-              </SubscribeButton>
-            </SubscribeForm>
-          </div>
-          <Divider />
-          <Article>
-            <Title>How does it work?</Title>
-            <Paragraph>
-              Fulcrum Emergency Ejection is a smart contract that automatically
-              calculates the maximal claimable amount in Fulcorm iETH pool. It
-              helps you to withdraw stucked fund as much as possible.
-            </Paragraph>
-            <Paragraph>
-              While withdrawing from Fulcrum, two requirements must be
-              fulfilled: you have that much deposit and there's enough liquidity
-              in iToken's contract. Since many people are trying to extract ETH,
-              even it seems to be possible for you to withdraw, someone may
-              always run before your transaction and lead to yours fail.
-            </Paragraph>
-            <Paragraph>
-              Fulcrum Emergency Ejection contract first checks how much ETH are
-              there in the pool, if none, quit, if some, withdraw the exact
-              number then. More gas efficient. Txs are not likely to revert. No
-              more suffer from gas estimation and competition.
-            </Paragraph>
-            <Paragraph>~35,000 gas for a tx not extracting any ETH</Paragraph>
-            <Paragraph>~500,000 gas for successful withdrawals</Paragraph>
-          </Article>
-        </Body>
-      </BodyContainer>
-    </Container>
+              {account && (
+                <>
+                  {!isAdvanceClick ? (
+                    <Separator onClick={advance}>
+                      Advanced Params (For Experts)
+                    </Separator>
+                  ) : (
+                    <PayInfoContainer>
+                      <FormTitle>Withdraw Amount</FormTitle>
+                      <InputFieldGroup>
+                        <InputField>
+                          <InpetLabel>Min</InpetLabel>
+                          <NumberInput
+                            value={amountMin}
+                            onChange={event => setAmountMin(event.target.value)}
+                          />
+                        </InputField>
+                        <InputField>
+                          <InpetLabel>Max</InpetLabel>
+                          <NumberInput
+                            value={amountMax}
+                            onChange={event => setAmountMax(event.target.value)}
+                          />
+                        </InputField>
+                      </InputFieldGroup>
+                    </PayInfoContainer>
+                  )}
+                </>
+              )}
+            </Box>
+            <Divider />
+            <Title>Subscribe Now for more DeFi products and tools</Title>
+            <div id='mc_embed_signup'>
+              <SubscribeForm
+                action='https://pelith.us4.list-manage.com/subscribe/post?u=60cf2da2a9c95713630d04bf4&amp;id=d9f24cce24'
+                method='post'
+                id='mc-embedded-subscribe-form'
+                name='mc-embedded-subscribe-form'
+                className='validate'
+                target='_blank'
+              >
+                <TextInput
+                  type='email'
+                  value={email}
+                  onChange={event => setEmail(event.target.value)}
+                  name='EMAIL'
+                  className='email'
+                  id='mce-EMAIL'
+                  placeholder='email address'
+                  required
+                />
+                <SubscribeButton name='subscribe' id='mc-embedded-subscribe'>
+                  Subscribe
+                </SubscribeButton>
+              </SubscribeForm>
+            </div>
+            <Divider />
+            <Article>
+              <Title>How does it work?</Title>
+              <Paragraph>
+                Fulcrum Emergency Ejection is a smart contract that
+                automatically calculates the maximal claimable amount in Fulcorm
+                iETH pool. It helps you to withdraw stucked fund as much as
+                possible.
+              </Paragraph>
+              <Paragraph>
+                While withdrawing from Fulcrum, two requirements must be
+                fulfilled: you have that much deposit and there's enough
+                liquidity in iToken's contract. Since many people are trying to
+                extract ETH, even it seems to be possible for you to withdraw,
+                someone may always run before your transaction and lead to yours
+                fail.
+              </Paragraph>
+              <Paragraph>
+                Fulcrum Emergency Ejection contract first checks how much ETH
+                are there in the pool, if none, quit, if some, withdraw the
+                exact number then. More gas efficient. Txs are not likely to
+                revert. No more suffer from gas estimation and competition.
+              </Paragraph>
+              <Paragraph>~35,000 gas for a tx not extracting any ETH</Paragraph>
+              <Paragraph>~500,000 gas for successful withdrawals</Paragraph>
+            </Article>
+          </Body>
+        </BodyContainer>
+      </Container>
+      <Footer token={token} />
+    </>
   )
 }

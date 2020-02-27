@@ -19,15 +19,6 @@ const AppLayout = styled.div`
   width: 100vw;
 `
 
-const Body = styled.div`
-  /* min-height: calc(100vh - 400px); Header: 100px, Footer: 300px */
-  padding: 0 16px;
-
-  ${({ theme }) => theme.mediaQuery.md`
-    padding: 0 64px;
-  `}
-`
-
 function Router() {
   return (
     <Suspense fallback={null}>
@@ -35,12 +26,9 @@ function Router() {
         <BrowserRouter>
           <AppLayout>
             <Header />
-            <Body>
-              <Switch>
-                <Route exact path='/' component={Home} />
-              </Switch>
-            </Body>
-            <Footer />
+            <Switch>
+              <Route exact path='/' component={Home} />
+            </Switch>
           </AppLayout>
         </BrowserRouter>
       </AppLoader>

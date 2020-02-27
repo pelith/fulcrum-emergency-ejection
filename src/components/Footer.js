@@ -51,7 +51,14 @@ const ExternalLink = styled.a`
   }
 `
 
-export default function Footer() {
+export default function Footer(props) {
+  const { token } = props
+  const contract = {
+    eth: '0xec4b77e7369325b52a1f9d1ae080b59954b8001a',
+    usdc: '0xb54f0b588a9f2dbe44459ae1fec37d62e50dee41',
+    dai: '0x47ca2166a5b837e891e6e64e780d1b43fc0a4e95',
+  }
+
   return (
     <FooterContainer>
       <FooterActions>
@@ -81,7 +88,7 @@ export default function Footer() {
           Github
         </ExternalLink>
         <ExternalLink
-          href='https://etherscan.io/address/0xec4b77e7369325b52a1f9d1ae080b59954b8001a#code'
+          href={`https://etherscan.io/address/${contract[token]}#code`}
           target='_blank'
         >
           Contract
