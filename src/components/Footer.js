@@ -62,8 +62,8 @@ export default function Footer(props) {
   return (
     <FooterContainer>
       <FooterActions>
-        <ExternalLink href='https://pelith.com' target='_blank'>
-          © 2020 Pelith, Inc.
+        <ExternalLink href='https://hakka.finance' target='_blank'>
+          © 2020 Hakka Finance
         </ExternalLink>
         <ExternalLink href='https://easydai.app/' target='_blank'>
           EasyDAI
